@@ -14,6 +14,7 @@ Yay, there's basically nothing to post right now, since all the code is a bit dy
 uhhh, no one else yay
 ### Special Thanks
 - [MDCDEV](https://x.com/@mdc_dev) - The great inspiration to be able to advance in this project, thanks MDC, based on he's engine "MDC-Engine", (Weno pues el código que hice yo veda xd)
+- [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine) - The inspiration of this engine (and the cache system xd.)
 # TODO
 - Wiki
 - Original assets (mostly in own zones that don't include "Gameplay" and those necessary things, like an editor and that nonsense)
