@@ -2,6 +2,7 @@ package;
 
 
 
+import api.Iteractor;
 import openfl.events.MouseEvent;
 import lime.app.Application;
 import openfl.events.NetStatusEvent;
@@ -85,7 +86,14 @@ class TitleState extends MusicBeatState
 			VideoState.seenVideo = FlxG.save.data.seenVideo;
 		}
 		CoolUtil.recomendFPS();
-
+		new Iteractor({
+			canDownload: true,
+			blockedUsers: [],
+			disableServices: true,
+		});
+		Iteractor.current.getModsSuscribed(function (e){
+			trace(e);
+		});
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif ANIMATE

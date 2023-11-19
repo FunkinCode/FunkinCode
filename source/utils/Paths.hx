@@ -45,7 +45,6 @@ class Paths
 		}
 	}
 	public static function clearUnusedMemory() {
-		trace(grabbedFiles);
 		for (key in currentTrackedAssets.keys()) {
 			var obj = currentTrackedAssets.get(key);
 			@:privateAccess
@@ -54,7 +53,6 @@ class Paths
 				currentTrackedAssets.remove(key);
 
 				openfl.Assets.cache.removeBitmapData(key);
-				trace(key);
 				grabbedFiles.remove(key);
 				obj.persist = false; 
 				obj.destroyOnNoUse = true;
@@ -65,7 +63,6 @@ class Paths
 				if (key != null&& !dontDeleteMePlease.contains(key) && !grabbedFiles.contains(key)) {
 					Assets.cache.clear(key);
 					grabbedFiles.remove(key);
-					trace(key);
 
 					
 					currentTrackedSounds.remove(key);
@@ -146,7 +143,6 @@ class Paths
 	}
 	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
-		trace(file);
 		var path = file;
 		if (path.startsWith("assets") || path.startsWith("mods"))
 			return path;
@@ -163,11 +159,9 @@ class Paths
 		if (library == "songs")
 			{
 				path = 'songs:assets/songs/' + file;
-				trace(file);
 
 				if (exists('mods/${currentMod}/songs/' + file, SOUND))
 					path = 'mods/${currentMod}/songs/' + file;
-				trace(path);
 			}
 		if(currentMod != "") {
 			if (exists('mods/${currentMod}/${file}', type))
@@ -293,7 +287,6 @@ class Paths
 			{
 				return File.getContent('./'+path);
 			}
-		trace(path);
 		return "";
 	}
 
@@ -302,10 +295,8 @@ class Paths
 
 		var path:String = getPath('$key',IMAGE, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
-		trace(path);
 		if (currentTrackedAssets.exists(path))
 		{
-			trace(path);
 			return currentTrackedAssets.get(path);
 		} else {
 			try {
@@ -322,7 +313,6 @@ class Paths
 			
 			return grap;
 		}
-		trace(path);
 
 		return null;
 	}
