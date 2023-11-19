@@ -66,6 +66,7 @@ class Main extends Sprite
 		#if !debug
 		initialState = TitleState;
 		#end
+		FlxGraphic.defaultPersist = true;
 
 		addChild(new FlxGay(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
 
@@ -73,7 +74,6 @@ class Main extends Sprite
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		#end
-		FlxGraphic.defaultPersist = true;
 		/* 
 			video = new Video();
 			addChild(video);

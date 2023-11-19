@@ -1,5 +1,6 @@
 package utils;
 
+import sys.thread.Thread;
 import sys.FileSystem;
 import sys.io.File;
 import flixel.FlxG;
@@ -19,100 +20,97 @@ class Paths
 	public static var grabbedFiles:Array<String> = [];
 	public static var dontDeleteMePlease:Array<String> = [
 		"assets/images/alphabet.png",
-		"assets/fonts/bold.png",
-		"assets/fonts/default.png",
+		"assets/images/fonts/bold.png",
+		"assets/images/fonts/default.png",
 		'assets/shared/music/breakfast.$SOUND_EXT',
-		'assets/shared/music/gameOver.$SOUND_EXT',
+		'assets/music/shared/gameOver.$SOUND_EXT',
 		'assets/music/freakyMenu.$SOUND_EXT',
 		'assets/sounds/scrollMenu.$SOUND_EXT',
-		'assets/sounds/confirmMenu.$SOUND_EXT',
-		"flixel/flixel-ui/img/tooltip_arrow.png",
-
-
+		'assets/sounds/confirmMenu.$SOUND_EXT'
 	];
+	public static function removeGraphicCache(graphic:FlxGraphic, ?key:String, destroy:Bool = true) {
+		if (graphic == null 
+			|| graphic == TitleState.diamond
+			|| dontDeleteMePlease.contains(key) 
+			|| !grabbedFiles.contains(key)  
+			|| !currentTrackedAssets.exists(key) 
+			)
+			return;
+		trace(key);
+		trace(graphic != null);
+	
+		@:privateAccess FlxG.bitmap._cache.remove(key);
+		currentTrackedAssets.remove(key);
+
+		openfl.Assets.cache.removeBitmapData(key);
+		grabbedFiles.remove(key);
+		if (!destroy)
+			return;
+		graphic.persist = false; 
+		graphic.destroyOnNoUse = true;
+		graphic.destroy();
+	}
+	public static function removeSoundCache(key:String) {
+		if (key == null 
+			|| dontDeleteMePlease.contains(key) 
+			|| !grabbedFiles.contains(key))
+			return;
+		Assets.cache.clear(key);
+		grabbedFiles.remove(key);
+		currentTrackedSounds.remove(key);
+	}
 	public static function destroyFlixelCache() {
 		@:privateAccess
 		for (key in FlxG.bitmap._cache.keys())
 		{
 			var obj = FlxG.bitmap._cache.get(key);
-			if (obj != null && !dontDeleteMePlease.contains(key) && !grabbedFiles.contains(key)) {
-				openfl.Assets.cache.removeBitmapData(key);
-				FlxG.bitmap._cache.remove(key);
-			grabbedFiles.remove(key);
-
-				obj.destroy();
-			}
+			removeGraphicCache(obj, key, false);
 		}
 	}
 	public static function clearUnusedMemory() {
 		for (key in currentTrackedAssets.keys()) {
-			var obj = currentTrackedAssets.get(key);
-			@:privateAccess
-			if (obj != null && !dontDeleteMePlease.contains(key) && !grabbedFiles.contains(key)) {
-				FlxG.bitmap._cache.remove(key);
-				currentTrackedAssets.remove(key);
+			var obj:FlxGraphic = currentTrackedAssets.get(key);
+			removeGraphicCache(obj, key);
 
-				openfl.Assets.cache.removeBitmapData(key);
-				grabbedFiles.remove(key);
-				obj.persist = false; 
-				obj.destroyOnNoUse = true;
-				obj.destroy();
+		}
+		for (key in currentTrackedSounds.keys()) {
+				removeSoundCache(key);
+		}
+		
+		openfl.system.System.gc();
+	}
+	public static function cacheData(){
+		Thread.create(()->{
+		for (i in dontDeleteMePlease) {
+			if (i.endsWith(".png")){
+				cacheGraphic(i);
+			} else{
+				var route = i.split("/");
+				if (route[0] == "music")
+					cacheMusic(route[1]);
+				else
+					cacheSound(route[1]);
 			}
 		}
-			for (key in currentTrackedSounds.keys()) {
-				if (key != null&& !dontDeleteMePlease.contains(key) && !grabbedFiles.contains(key)) {
-					Assets.cache.clear(key);
-					grabbedFiles.remove(key);
-
-					
-					currentTrackedSounds.remove(key);
-				}
-			}
-		
-		//openfl.system.System.gc();
+		});
 	}
-
+	public static function cacheSound(key:String, ?library:String = "") {
+		sound(key, library);
+	}
+	public static function cacheMusic(key:String, ?library:String = "") {
+		music(key, library);
+	}
+	public static function cacheGraphic(key:String, ?library:String = "") {
+		image(key, library);
+	}
 	public static function clearMemory() {
-		// THIS DELTE ALL MEMORY
-		
-		for (key in currentTrackedAssets.keys()) {
-				var obj = currentTrackedAssets.get(key);
-				@:privateAccess
-				if (obj != null) {
-					FlxG.bitmap._cache.remove(key);
-					openfl.Assets.cache.removeBitmapData(key);
-					currentTrackedAssets.remove(key);
-					grabbedFiles.remove(key);
+		grabbedFiles=[];
 
-					obj.persist = false; 
-					obj.destroyOnNoUse = true;
-					obj.destroy();
-				}
-		}
-
-			@:privateAccess
-			for (key in FlxG.bitmap._cache.keys())
-			{
-				var obj = FlxG.bitmap._cache.get(key);
-				if (obj != null) {
-					openfl.Assets.cache.removeBitmapData(key);
-					FlxG.bitmap._cache.remove(key);
-				grabbedFiles.remove(key);
-
-					obj.destroy();
-				}
-			}
-			for (key in currentTrackedSounds.keys()) {
-				if (key != null) {
-					Assets.cache.clear(key);
-				grabbedFiles.remove(key);
-
-					currentTrackedSounds.remove(key);
-				}
-			}
-		
+		clearUnusedMemory(); // Clear "unused" memory
+		destroyFlixelCache(); // Clear Flixel Cache
+		cacheData(); // recache old cache data
 	}
-
+	
 	static public function setCurrentLevel(name:String)
 	{
 		currentLevel = name.toLowerCase();
@@ -123,8 +121,8 @@ class Paths
 
 		for (i in formats)
 		{
-			if (FileSystem.exists('$base.$i')){
-				_format = '.'+ i;
+			if (FileSystem.exists('$base$i')){
+				_format =  i;
 				return true;
 			}
 		}
@@ -133,18 +131,26 @@ class Paths
 	public static function exists(file:String, type:AssetType) {
 		_format = "";
 
-		if (type == IMAGE)
+		switch(type)
 			{
-				if (checkFormatsExisting(file, ["png", "jpg", "jpeg"]))
+				case IMAGE:
+				if (checkFormatsExisting(file, [".png", ".jpg", ".jpeg", ".gif", ""]))
 					return true;
+				case TEXT:
+				if (checkFormatsExisting(file, [".txt", ".hscript", ".json", ".data", ".raw", ".pkg", ".trans", ".file", ""]))
+					return true;
+				default:
+					return FileSystem.exists(file);
+
 			}
+	
 			
 		return FileSystem.exists(file);
 	}
 	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
 		var path = file;
-		if (path.startsWith("assets") || path.startsWith("mods"))
+		if (path.startsWith("assets") || path.startsWith("mods") || path.startsWith("./"))
 			return path;
 		if (library != null)
 			path = getLibraryPath(file + _format, library);
@@ -295,6 +301,8 @@ class Paths
 
 		var path:String = getPath('$key',IMAGE, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
+		trace(path);
+
 		if (currentTrackedAssets.exists(path))
 		{
 			return currentTrackedAssets.get(path);
@@ -310,7 +318,6 @@ class Paths
 			debug_file_getter.push(path);
 			currentTrackedAssets.set(path, grap);
 			grabbedFiles.push(path);
-			
 			return grap;
 		}
 
@@ -331,6 +338,8 @@ class Paths
 	static  function _sound(key:String, library) {
 		var path:String = getPath('$key', SOUND, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
+		trace(path);
+
 		if(!currentTrackedSounds.exists(path))
 			currentTrackedSounds.set(path, Sound.fromFile('./' + path));
 	

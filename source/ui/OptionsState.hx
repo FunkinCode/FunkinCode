@@ -3,7 +3,6 @@ package ui;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 
@@ -20,6 +19,8 @@ class OptionsState extends MusicBeatState
 
 	override function create()
 	{
+		transIn = FlxTransitionableState.defaultTransIn;
+		transOut = FlxTransitionableState.defaultTransOut;
 		var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -197,9 +198,12 @@ class OptionsMenu extends Page
 		else
 			createItem("login", function() selectLogin());
 		#end
+		createItem("Login with discord", function () tryLogin());
 		createItem("exit", exit);
 	}
-
+	function tryLogin() {
+		trace("login...");
+	}
 	function createItem(name:String, callback:Void->Void, fireInstantly = false)
 	{
 		var item = items.createItem(0, 100 + items.length * 100, name, Bold, (?v)-> callback());

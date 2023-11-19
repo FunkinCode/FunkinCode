@@ -12,6 +12,7 @@ class FlxGay extends FlxGame {
             FlxG.sound.destroy();
             #end
             Paths.grabbedFiles = [];
+            Paths.cacheData();
 
             FlxG.signals.preStateSwitch.dispatch();
     
@@ -22,12 +23,17 @@ class FlxGay extends FlxGame {
             // Destroy the old state (if there is an old state)
             if (_state != null)
                 _state.destroy();
-      
+           try {
+                Paths.clearUnusedMemory();
+            } catch(error) {
+                FlxG.log.error(error);
+            }
            // BAD MANNAGER BAF MANANGER
            Paths.destroyFlixelCache();
-        /*
-            Paths.clearMemory();
-            FlxG.bitmap.clearCache();
+           FlxG.bitmap.clearCache();
+
+        
+         /*   Paths.clearMemory();
         */
          
 
@@ -38,13 +44,9 @@ class FlxGay extends FlxGame {
                 FlxG.signals.preGameStart.dispatch();
     
             FlxG.signals.preStateCreate.dispatch(_state);
-            try {
-                Paths.clearUnusedMemory();
-            } catch(error) {
-                FlxG.log.error(error);
-            }
+       
             _state.create();
-        
+       
             if (_gameJustStarted)
                 gameStart();
     
