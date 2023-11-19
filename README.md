@@ -22,6 +22,16 @@ uhhh, no one else yay
 # ISSUES
 - uh
 # How to Funkin'
-- .
-# How to mod (Uncompatible rn)
-- .
+- To play Funkin' Code is really diferent, just open it and do anything you want
+### PREFERENCES
+- We made some preferences like "song-speed" to modify... uhm.... Song Speed?
+- Another one is "HealthBarSize", uhm yeah, healthbar size
+- The FPS options it's very very cool to put 30 FPS and cry
+- Volume master is a beta option, i just added it cus ninjamuffin99 already put it in the code (i swear)
+- Middlescroll middle scroll
+### MOD LOAD/CREATE
+- To load mods, just put 'em in `mods/` AND open the game or just download it and put the .zip in `mods/`
+# How to mod (50 % compatible rn)
+- To make mods you can press `7` in Main menu, and it open debug menu (like psych engine), run MODMAKERSTUDIO option to init da maker studio
+- It makes a directory in your game, like `mods/My-Mod/` and if you want, use a IDE Editor text (like VisualStudioCode) and make it
+- SEE THE [WIKI]() FOR HOW TO USE ALL MODS, THIS IS JUST DUMB SUMMARY
