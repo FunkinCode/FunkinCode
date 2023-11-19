@@ -1,0 +1,147 @@
+{
+ "image": "characters/Dummy",
+ "icon": "pico",
+ "animations": [
+  {
+   "name": "idle",
+   "prefix": "Pico Idle Dance",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singUP",
+   "prefix": "pico Up note0",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singDOWN",
+   "prefix": "Pico Down Note0",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFT",
+   "prefix": "Pico NOTE LEFT0",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHT",
+   "prefix": "Pico Note Right0",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHTmiss",
+   "prefix": "Pico Note Right Miss",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFTmiss",
+   "prefix": "Pico NOTE LEFT miss",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFT",
+   "prefix": "Pico Note Right0",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHT",
+   "prefix": "Pico NOTE LEFT0",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHTmiss",
+   "prefix": "Pico NOTE LEFT miss",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFTmiss",
+   "prefix": "Pico Note Right Miss",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singUPmiss",
+   "prefix": "pico Up note miss",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singDOWNmiss",
+   "prefix": "Pico Down Note MISS",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}

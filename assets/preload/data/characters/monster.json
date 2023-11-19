@@ -1,0 +1,67 @@
+{
+ "image": "characters/Monster_Assets",
+ "icon": "monster",
+ "animations": [
+  {
+   "name": "idle",
+   "prefix": "monster idle",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singUP",
+   "prefix": "monster up note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singDOWN",
+   "prefix": "monster down",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFT",
+   "prefix": "Monster left note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHT",
+   "prefix": "Monster Right note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}

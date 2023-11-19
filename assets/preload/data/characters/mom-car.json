@@ -1,0 +1,82 @@
+{
+ "image": "characters/momCar",
+ "icon": "mom-car",
+ "animations": [
+  {
+   "name": "idle",
+   "prefix": "Mom Idle",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singUP",
+   "prefix": "Mom Up Pose",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singDOWN",
+   "prefix": "MOM DOWN POSE",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFT",
+   "prefix": "Mom Left Pose",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHT",
+   "prefix": "Mom Pose Left",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "idleHair",
+   "prefix": "Mom Idle",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [
+    10,
+    11,
+    12,
+    13
+   ],
+   "loop": true,
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}

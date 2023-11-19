@@ -1,0 +1,56 @@
+{
+ "image": "characters/bfPixelsDEAD",
+ "icon": "bf-pixel-dead",
+ "animations": [
+  {
+   "name": "singUP",
+   "prefix": "BF Dies pixel",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "firstDeath",
+   "prefix": "BF Dies pixel",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "deathLoop",
+   "prefix": "Retry Loop",
+   "FPS": true,
+   "nextAnimation": "",
+   "indices": [],
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "deathConfirm",
+   "prefix": "RETRY CONFIRM",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}

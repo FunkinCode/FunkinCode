@@ -1,0 +1,161 @@
+function init() {
+    simulateSong = 0;
+        _curStep  = 0;
+        _autoAnim=true;
+}
+function create() 
+    {
+        curStage = 'school';
+    
+        // defaultCamZoom = 0.9;
+    
+        var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
+        bgSky.scrollFactor.set(0.1, 0.1);
+        add(bgSky);
+    
+        var repositionShit = -200;
+    
+        var bgSchool = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image('weeb/weebSchool'));
+        bgSchool.scrollFactor.set(0.6, 0.90);
+        add(bgSchool);
+    
+        bgStreet = new FlxSprite(repositionShit).loadGraphic(Paths.image('weeb/weebStreet'));
+        bgStreet.scrollFactor.set(0.95, 0.95);
+        add(bgStreet);
+    
+        var fgTrees = new FlxSprite(repositionShit + 170, 130).loadGraphic(Paths.image('weeb/weebTreesBack'));
+        fgTrees.scrollFactor.set(0.9, 0.9);
+        add(fgTrees);
+    
+        var bgTrees = new FlxSprite(repositionShit - 380, -800);
+        var treetex = Paths.getPackerAtlas('weeb/weebTrees');
+        bgTrees.frames = treetex;
+        bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
+        bgTrees.animation.play('treeLoop');
+        bgTrees.scrollFactor.set(0.85, 0.85);
+        add(bgTrees);
+    
+        var treeLeaves = new FlxSprite(repositionShit, -40);
+        treeLeaves.frames = Paths.getSparrowAtlas('weeb/petals');
+        treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
+        treeLeaves.animation.play('leaves');
+        treeLeaves.scrollFactor.set(0.85, 0.85);
+        add(treeLeaves);
+    
+        var widShit = Std.int(bgSky.width * 6);
+    
+        bgSky.setGraphicSize(widShit);
+        bgSchool.setGraphicSize(widShit);
+        bgStreet.setGraphicSize(widShit);
+        bgTrees.setGraphicSize(Std.int(widShit * 1.4));
+        fgTrees.setGraphicSize(Std.int(widShit * 0.8));
+        treeLeaves.setGraphicSize(widShit);
+    
+        fgTrees.updateHitbox();
+        bgSky.updateHitbox();
+        bgSchool.updateHitbox();
+        bgStreet.updateHitbox();
+        bgTrees.updateHitbox();
+        treeLeaves.updateHitbox();
+    
+        bgGirls = new BackgroundGirls(-100, 190);
+        bgGirls.scrollFactor.set(0.9, 0.9);
+    
+        if (curSong == 'roses')
+        {
+            bgGirls.getScared();
+        }
+   
+
+        bgGirls.setGraphicSize(Std.int(bgGirls.width * 6));
+        bgGirls.updateHitbox();
+        add(bgGirls);
+    
+    }
+    function independementupdate(elapsed) {
+
+        simulateSong += elapsed * 1000;
+        var oldStep = Math.floor(_curStep);
+        _curStep= Math.floor(simulateSong / 350);
+        FlxG.watch.addQuick("xd1", oldStep);
+        FlxG.watch.addQuick("xd2", _curStep);
+        FlxG.watch.addQuick("xd3", simulateSong);
+        if (_autoAnim){
+            boyfriend.update(elapsed);
+            gf.update(elapsed);
+            dad.update(elapsed);
+        if (oldStep != _curStep) 
+            {
+                if (_curStep % 4 == 0)
+                    {
+                        trace("dance");
+                        boyfriend.dance();
+                        gf.dance();
+                        dad.dance();
+                    }
+            }
+        
+        }
+    }
+    function beatHit() {
+        _autoAnim = false;
+        bgGirls.dance();
+    }
+
+    function postCreate() {
+        FlxG.camera.setScrollBounds(bgStreet.x, bgStreet.x + bgStreet.width, bgStreet.y, bgStreet.y + bgStreet.height);
+
+        boyfriend.dance();
+        gf.dance();
+        dad.dance();
+        state.cancelCountDown = true;
+        state.inCutscene = true;
+
+        schoolIntro(doof);
+        trace("Doof:");
+        trace(doof);
+    }
+    function schoolIntro(dialogueBox)
+        {
+            trace("funca");
+
+            var black= new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2,0xFF000000);
+            black.scrollFactor.set();
+            add(black);
+    
+            camFollow.setPosition(camPos.x, camPos.y);
+    
+            if (curSong == 'roses')
+            {
+                remove(black);
+                FlxG.sound.play(Paths.sound('ANGRY'));
+                black.alpha = .25;
+            }
+    
+            new FlxTimer().start(0.3, function(tmr)
+            {
+                black.alpha -= 0.15;
+    
+                if (black.alpha > 0){
+                    tmr.reset(0.3);
+                } else
+                {
+                    if (dialogueBox != null)
+                    {
+                        add(dialogueBox);
+                    }
+                    else {
+                        startCountdown();
+                    }
+    
+                    remove(black);
+                }
+            });
+        }
+    function repositionChars() {
+        boyfriend.x += 200;
+        boyfriend.y += 220;
+        gf.x += 180;
+        gf.y += 300;
+
+    }

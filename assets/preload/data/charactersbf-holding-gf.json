@@ -1,0 +1,44 @@
+{
+ "image": "characters/gfTankmen",
+ "icon": "gf-tankmen",
+ "animations": [
+  {
+   "name": "sad",
+   "prefix": "GF Crying at Gunpoint",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": true,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "danceLeft",
+   "prefix": "GF Dancing at Gunpoint",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "danceRight",
+   "prefix": "GF Dancing at Gunpoint",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": false,
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}

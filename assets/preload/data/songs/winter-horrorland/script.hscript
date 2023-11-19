@@ -1,0 +1,35 @@
+function create() {
+    state.cancelCountDown = true;
+}
+function postCreate() {
+    var blackScreen= new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), 0xFF000000);
+    state.add(blackScreen);
+    blackScreen.scrollFactor.set();
+    camHUD.visible = false;
+
+    new FlxTimer().start(0.1, function(tmr)
+    {
+        state.remove(blackScreen);
+        FlxG.sound.play(Paths.sound('Lights_Turn_On'));
+        camFollow.y = -2050;
+        camFollow.x += 200;
+        FlxG.camera.focusOn(camFollow.getPosition());
+        FlxG.camera.zoom = 1.5;
+
+        new FlxTimer().start(0.8, function(tmr)
+        {
+            camHUD.visible = true;
+            state.remove(blackScreen);
+            FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+                ease: FlxEase.quadInOut,
+                onComplete: function(twn)
+                {
+                    trace("u");
+                    state.startCountdown();
+                    trace("u");
+
+                }
+            });
+        });
+    });
+}

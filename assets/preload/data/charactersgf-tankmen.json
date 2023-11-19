@@ -1,0 +1,121 @@
+{
+ "image": "characters/Dummy",
+ "icon": "gf-christmas",
+ "animations": [
+  {
+   "name": "cheer",
+   "prefix": "GF Cheer",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singLEFT",
+   "prefix": "GF left note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singRIGHT",
+   "prefix": "GF Right Note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singUP",
+   "prefix": "GF Up Note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "singDOWN",
+   "prefix": "GF Down Note",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "sad",
+   "prefix": "gf sad",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "danceLeft",
+   "prefix": "GF Dancing Beat",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "danceRight",
+   "prefix": "GF Dancing Beat",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "hairBlow",
+   "prefix": "GF Dancing Beat Hair blowing",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "hairFall",
+   "prefix": "GF Dancing Beat Hair Landing",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "scared",
+   "prefix": "GF FEAR",
+   "FPS": true,
+   "nextAnimation": "",
+   "indices": [],
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}

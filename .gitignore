@@ -1,3 +1,4 @@
-build/
-Build/
+export/
 .vscode/
+.ignore
+node-modules/

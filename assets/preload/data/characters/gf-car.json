@@ -1,0 +1,77 @@
+{
+ "image": "characters/gfCar",
+ "icon": "gf-car",
+ "animations": [
+  {
+   "name": "singUP",
+   "prefix": "GF Dancing Beat Hair blowing CAR",
+   "nextAnimation": "",
+   "indices": [],
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "danceLeft",
+   "prefix": "GF Dancing Beat Hair blowing CAR",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [
+    30,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "loop": false,
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "danceRight",
+   "prefix": "GF Dancing Beat Hair blowing CAR",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [],
+   "offsets": [],
+   "animationLength": 4
+  },
+  {
+   "name": "idleHair",
+   "prefix": "GF Dancing Beat Hair blowing CAR",
+   "FPS": 24,
+   "nextAnimation": "",
+   "indices": [
+    10,
+    11,
+    12,
+    25,
+    26,
+    27
+   ],
+   "loop": true,
+   "offsets": [],
+   "animationLength": 4
+  }
+ ],
+ "scale": [],
+ "color": [],
+ "danceSpeed": 2,
+ "healthColor": [
+  0,
+  0,
+  0
+ ],
+ "flipX": false,
+ "antialiasing": true,
+ "flipY": false
+}
