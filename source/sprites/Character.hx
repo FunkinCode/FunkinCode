@@ -20,6 +20,7 @@ typedef CharFile = {
 	var danceSpeed:Int;
 	var healthColor:Array<Int>;
 
+	var position:Array<Float>;
 	var flipX:Bool;
 	var antialiasing:Bool;
 	var flipY:Bool;
@@ -48,6 +49,7 @@ class Character extends SpriteBase
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var holdTimer:Float = 0;
+	public var position:Array<Float> =[0,0];
 	public var animationNotes:Array<Dynamic> = [];
 	public var charFile:CharFile;
 
@@ -81,6 +83,8 @@ class Character extends SpriteBase
 				isXML = false;
 			if (charFile.scale == null)
 				charFile.scale = [1,1];
+			if (charFile.position == null || charFile.position.length < 1)
+				charFile.position = [0,0];
 			trace(charFile.image);
 			@:privateAccess trace("."+Paths.getPath("images/" + charFile.image , IMAGE, "") + ".");
 			frames = isXML ? Paths.getSparrowAtlas(charFile.image) : Paths.getPackerAtlas(charFile.image);
@@ -116,6 +120,7 @@ class Character extends SpriteBase
 						anim.loop,
 					);
 				}
+				position = charFile.position;
 				for (i in 0...2) {
 					if (Math.isNaN(anim.offsets[i]))
 						anim.offsets[i] = 0;

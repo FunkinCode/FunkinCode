@@ -80,6 +80,10 @@
   0,
   0
  ],
+ "position" : [
+    0,
+    200
+ ],
  "flipX": false,
  "antialiasing": true,
  "flipY": false

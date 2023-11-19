@@ -57,8 +57,8 @@ class Script {
             }
         setVar("state", curState);
         setVar("Padre", curState);
-        setVar("Patern", curState);
-        setVar("State", curState);
+        setVar("Patern", stateClass);
+        setVar("State", stateClass);
         setVar(className, stateClass);
         setVar("className", className);
         setVar("PlayState", PlayState);

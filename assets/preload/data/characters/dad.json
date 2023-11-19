@@ -61,6 +61,10 @@
   0,
   0
  ],
+ "position" : [
+    0,
+    400
+ ],
  "flipX": false,
  "antialiasing": true,
  "flipY": false
