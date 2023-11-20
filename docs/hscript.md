@@ -19,8 +19,8 @@ Uhm hola, hoy explicaré en sencillas palabras (o más bien dicho qué contrae) 
 | ------ | ------ | ------ | 
 | update | elapsed | Every frame calls it!
 | independementUpdate | elapsed | Every frame calls it + ignore the "persistUpdate"
-| create | | This calls when the state is create (OJO: if you add the script after the create state, this code doesn't effect |
-| postCreate || This calls when the states is in the last lines (OJO: the same thing of create)|
+| create | nothing | This calls when the state is create (OJO: if you add the script after the create state, this code doesn't effect |
+| postCreate | nothing | This calls when the states is in the last lines (OJO: the same thing of create)|
 | destroy | removingMe | when the states is destroying or just deleting the script |
 | init | CurrentState, ScriptID, ?curSong | this calls when the script is initing |
 
