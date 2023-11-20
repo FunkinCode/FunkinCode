@@ -81,17 +81,18 @@ class Paths
 	}
 	public static function cacheData(){
 		Thread.create(()->{
+        /*
 		for (i in dontDeleteMePlease) {
 			if (i.endsWith(".png")){
 				cacheGraphic(i);
 			} else{
-				var route = i.split("/");
-				if (route[0] == "music")
+				
+				if (
 					cacheMusic(route[1]);
 				else
 					cacheSound(route[1]);
 			}
-		}
+		}*/
 		});
 	}
 	public static function cacheSound(key:String, ?library:String = "") {
