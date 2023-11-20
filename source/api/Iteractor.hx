@@ -25,7 +25,7 @@ class Iteractor {
         return token;
     }
 
-    private function getUser(ID:String, onFetch:(user:User)->Void) {
+    public function getUser(ID:String, onFetch:(user:User)->Void) {
         if (users.exists(ID)){
             onFetch(users.get(ID));
             return;
@@ -45,17 +45,18 @@ class Iteractor {
                 FileSystem.createDirectory("_cache/");
 
             downloadArchive(data.avatarURL, '_cache/local-avatar.png', function(){trace("descargado");});
-            downloadArchive('https://cdn.discordapp.com/attachments/969730941956280352/1175867699495182366/TestMod.zip?ex=656ccb22&is=655a5622&hm=4ea8c805e804c2f002208e037cb145d23dc56523df9640b872f81dacc1ba119b&',
+           /* downloadArchive('https://cdn.discordapp.com/attachments/969730941956280352/1175867699495182366/TestMod.zip?ex=656ccb22&is=655a5622&hm=4ea8c805e804c2f002208e037cb145d23dc56523df9640b872f81dacc1ba119b&',
             "mod.zip",
             function (){trace("moddescargado");}
-            );
+            );*/
             users.set(ID,userData);
+            users.set("local",userData);
             getUser(ID, onFetch); // reCall
         });
 
         return;
     }
-    private function downloadArchive(url:String, path:String, onDownloaded:()->Void) {
+    public function downloadArchive(url:String, path:String, onDownloaded:()->Void) {
         trace("Trying download from " + url);
 
         var request = new haxe.Http(url);
@@ -70,7 +71,7 @@ class Iteractor {
         };
         request.request();
     }
-    private function getText(url:String, onData:(data:Dynamic)->Void) {
+    public function getText(url:String, onData:(data:Dynamic)->Void) {
         /*if (cache.exists(url)) {
             trace("Founded cache");
             onData(Json.parse(cache.get(url)));

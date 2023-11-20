@@ -14,6 +14,7 @@ class MusicBeatState extends FlxUIState
 	private var dontchangesectionplz:Bool = false;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+	public var transitionCamera:FlxCamera;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -24,14 +25,34 @@ class MusicBeatState extends FlxUIState
 			trace('reg ' + transIn.region);
 
 		super.create();
+		inittransitionCamera();	
+	}
+	function downloadFile(url, file) {
+		api.Iteractor.current.downloadArchive(url, file, function (){
+				trace("Se ha descargado tio");
+		}) ;
 	}
 	function createMod(n = "test")
 	{
 		utils.Mods.createMod(n);
 	}
+	override function openSubState(substate:FlxSubState) {
+		super.openSubState(substate);
+		//subState.camera = transitionCamera;
+	}
+	public function inittransitionCamera():FlxCamera {
+		if (transitionCamera != null)
+			return transitionCamera;
+		transitionCamera = new FlxCamera();
+		transitionCamera.bgColor.alpha = 0;
+		FlxG.cameras.add(transitionCamera);
+		trace(transitionCamera);
+		return transitionCamera;
+	}
 
 	override function update(elapsed:Float)
 	{
+		
 		if (FlxG.keys.justPressed.R)
 			{
 			trace("forcing reset of mods...");

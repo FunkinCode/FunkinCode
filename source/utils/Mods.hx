@@ -13,6 +13,7 @@ typedef ModsPack = {
     var author:String;
     var needsRestartWhenLoading:Bool;
     var useASGlobal:Bool;
+    var canCheat:Bool;
 }
 
 class Mods {
@@ -47,7 +48,7 @@ class Mods {
         "data/weekList.txt" => file,
         "data/characterList.txt" => file,
         "data/stageList.txt" => file,
-        "data/songs/global-script.hscript" => {type: "file",
+        "data/global-script.hscript" => {type: "file",
         content:
             'function create(){
                 trace("hai hai");
@@ -107,6 +108,7 @@ class Mods {
             author: "No name",
             needsRestartWhenLoading: false,
             useASGlobal: false,
+            canCheat: true,
 
         };
         _BaseMod.set("pack.json", {type: "file", content: Json.stringify(pack, null, " ")});
