@@ -94,7 +94,6 @@ class Script {
     setVar('FlxAnimate',FlxAnimate);
     setVar('FlxSymbol',FlxSymbol);
 
-    setVar('FlxVideo',FlxVideo);
 
     setVar('BGSprite',BGSprite);
     setVar('MusicBeatState',MusicBeatState);
@@ -135,8 +134,11 @@ class Script {
     setVar('OutdatedSubState',OutdatedSubState);
     setVar('PlayState',PlayState);
     setVar('StoryMenuState',StoryMenuState);
+    #if VIDEOS
     setVar('VideoState',VideoState);
+    setVar('FlxVideo',FlxVideo);
 
+    #end
     setVar('GameOverSubstate',GameOverSubstate);
     setVar('PauseSubState',PauseSubState);
 

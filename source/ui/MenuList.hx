@@ -119,15 +119,17 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		if (prev == next)
 			return index;
 		var lastIndex:Int = index;
+		var loops = 0;
 		do {
-			if (lastIndex == index){
+			if (lastIndex == index &&  loops > 5){
 				index += prev ? -1 : 1;
 				if (index < 0)
 					index = size - 1;
 				if (index >= size)
-					index = 1;//invalid first pos?
+					index = 0; //invalid first pos?
 				break;
 			}
+			loops ++;
 			if (prev)
 			{
 				if (index > 0)

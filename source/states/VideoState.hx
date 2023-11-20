@@ -5,6 +5,7 @@ class VideoState extends MusicBeatState
 {
 
 	public static var seenVideo:Bool = false;
+	#if VIDOES
 	public var video:FlxVideo;
 
 	override function create()
@@ -21,6 +22,7 @@ class VideoState extends MusicBeatState
 		FlxG.switchState(new TitleState());
 		return;
 		#end
+
 		video = new FlxVideo();
 		video.play(Paths.file('music/kickstarterTrailer.mp4'), false);
 
@@ -41,5 +43,7 @@ class VideoState extends MusicBeatState
 		TitleState.initialized = false;
 		FlxG.switchState(new TitleState());
 	}
-
+	#else
+	override function create() {FlxG.switchState(new TitleState());}
+	#end
 }

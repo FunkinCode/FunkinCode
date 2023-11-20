@@ -1,7 +1,9 @@
 import animate.FlxAnimate;
 import animate.FlxSymbol;
 
+#if VIDEOS
 import hxcodec.flixel.FlxVideo;
+#end
 
 import forward.BGSprite;
 import forward.MusicBeatState;

@@ -19,8 +19,7 @@ class OptionsState extends MusicBeatState
 
 	override function create()
 	{
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
+		
 		var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -65,6 +64,7 @@ class OptionsState extends MusicBeatState
 	{
 		page.onSwitch.add(switchPage);
 		pages[name] = page;
+		trace(name);
 		add(page);
 		page.exists = currentName == name;
 		return page;
@@ -72,11 +72,12 @@ class OptionsState extends MusicBeatState
 
 	function setPage(name:PageName)
 	{
+		trace(name);
 		if (pages.exists(currentName))
-			currentPage.exists = false;
-
+			currentPage.exists  = false;
+		trace(currentPage);
 		currentName = name;
-
+		trace(currentPage);
 		if (pages.exists(currentName))
 			currentPage.exists = true;
 	}
@@ -119,6 +120,7 @@ class Page extends FlxGroup
 
 	inline function switchPage(name:PageName)
 	{
+		trace(name);
 		onSwitch.dispatch(name);
 	}
 
@@ -231,7 +233,7 @@ class OptionsMenu extends Page
 	function selectDonate()
 	{
 		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin"]);
 		#else
 		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 		#end

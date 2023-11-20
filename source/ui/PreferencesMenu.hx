@@ -112,7 +112,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('downscroll', false);
 		preferenceCheck('flashing-menu', true);
 		preferenceCheck('camera-zoom', true);
-		preferenceCheck('fps', true);
+		preferenceCheck('fps', 60);
 		preferenceCheck('fps-counter', true);
 		preferenceCheck('auto-pause', false);
 		preferenceCheck('master-volume', 100);
@@ -139,6 +139,8 @@ class PreferencesMenu extends ui.OptionsState.Page
 			fps = 60;
 		setPref('fps', fps);
 		FlxG.drawFramerate = FlxG.updateFramerate=fps;
+		if (FlxG.drawFramerate<30)
+			FlxG.drawFramerate = FlxG.updateFramerate = 30;
 		FlxG.save.flush();
 
 	}
