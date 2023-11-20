@@ -15,7 +15,7 @@ class MusicBeatState extends FlxUIState
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 	public var transitionCamera:FlxCamera;
-
+	public var camHUD:FlxCamera;
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
@@ -48,10 +48,7 @@ class MusicBeatState extends FlxUIState
 		}
 		if (transitionCamera != null)
 			return transitionCamera;
-		transitionCamera = new FlxCamera();
-		transitionCamera.bgColor.alpha = 0;
-		FlxG.cameras.add(transitionCamera);
-		trace(transitionCamera);
+		transitionCamera = camHUD;
 		return transitionCamera;
 	}
 

@@ -1,6 +1,6 @@
 
 function init(name, path, id, patern) {
-
+    globalPatern = patern;
     var swagshit = Song.loadFromJson('picospeaker', 'stress');
     patern.playAnim("shoot1");
     var notes = swagshit.notes;
@@ -23,7 +23,7 @@ function init(name, path, id, patern) {
 
     for (i in 0...TankmenBG.animationNotes.length)
     {
-        if (FlxG.random.bool(25))
+        if (FlxG.random.bool(15))
         {
             var tankman= tankmanRun.recycle(TankmenBG);
             // new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
@@ -33,4 +33,11 @@ function init(name, path, id, patern) {
         }
     }
 
+}
+function update(elapsed) {
+    if (patern.animation.curAnim == null)
+        return;
+    if (patern.animation.curAnim.finished)                
+        playAnim(patern.animation.curAnim.name, false, false, patern.animation.curAnim.numFrames - 3);
+                
 }

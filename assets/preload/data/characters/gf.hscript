@@ -1,0 +1,10 @@
+
+function init(name, path, id, partern) {
+	globalPatern = patern;	
+}
+function update(elapsed) {
+	if (patern.animation.curAnim == null)
+		return;
+	if (patern.animation.curAnim.name == 'hairFall' && patern.animation.curAnim.finished)
+		patern.playAnim('danceRight');
+}

@@ -41,7 +41,7 @@
 	<classpath name="source" />
 
 	<!-- <assets path='assets/preload/music' include="*mp4" embed='false' /> -->
-	<haxedef name="VIDEOS" if="windows linux" unless="neko" />
+	<haxedef name="VIDEOS" if="desktop" unless="neko" />
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/videos" rename="assets/videos" exclude="*.proj" if="VIDEOS"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
@@ -123,8 +123,9 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="hxCodec" if="VIDEOS"/>
-	<!--haxelib name="newgrounds" unless="switch"/> -->
+	<haxelib name="hxcodec" /> <!--REDO LATER -->
+	<!--<haxelib name="hxCodec" />
+	haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="newgrounds"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
