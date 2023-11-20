@@ -335,13 +335,12 @@ class TitleState extends MusicBeatState
 			FlxG.switchState(new CutsceneAnimTestState());
 		#end
 		if (FlxG.keys.justPressed.L) {
-		FreeplayState.loadSong("chiller", "corrupted-demo", 1, 8);
+				FlxG.sound.music.onComplete ();
+		//FreeplayState.loadSong("chiller", "corrupted-demo", 1, 8);
 
 		}
 
-		
-
-
+	
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 

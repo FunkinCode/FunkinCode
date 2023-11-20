@@ -60,7 +60,6 @@ class PlayState extends MusicBeatState
 	private var iconP1:HealthIcon;
 	public var oldtimestamp:Float;
 	private var iconP2:HealthIcon;
-	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 	
 	
@@ -360,9 +359,10 @@ class PlayState extends MusicBeatState
 	}
 	public function addScript(path:String, ?justOneRun:Bool = false, name:String, ?customPatern:Dynamic)
 	{
-		trace('founded '+  path);
+		
 		if (!sys.FileSystem.exists(path))
 			return null;
+		trace('founded '+  path);
 		var data = sys.io.File.getContent(path).trim().rtrim().replace("\r", "");
 		var script = new Script(data);
 		script.ID = scriptsIDS+=1;
@@ -416,6 +416,7 @@ class PlayState extends MusicBeatState
 	{
 
 		#if VIDEOS
+		trace(Sys.getCwd() +Paths.file('music/${name}.mp4'));
 		inCutscene = true;
 
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -1136,7 +1137,8 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.stop();
 				vocals.stop();
 				var diabl = true;
-				callScripts("loadingNextSong", storyPlaylist[0].toLowerCase(),function (disable){
+				storyPlaylist[0] = storyPlaylist[0].toLowerCase();
+				callScripts("loadingNextSong", storyPlaylist[0],function (disable){
 					if (disable)
 							diabl = false;
 				}, function
@@ -1145,7 +1147,7 @@ class PlayState extends MusicBeatState
 						if (!esotilin)
 							prevCamFollow = camFollow;
 
-						SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
+						SONG = Song.loadFromJson(storyPlaylist[0] + difficulty, storyPlaylist[0]);
 						LoadingState.loadAndSwitchState(new PlayState());
 					}
 				);
@@ -1153,7 +1155,7 @@ class PlayState extends MusicBeatState
 				if (diabl)
 				{
 					prevCamFollow = camFollow;
-					SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
+					SONG = Song.loadFromJson(storyPlaylist[0]+ difficulty, storyPlaylist[0]);
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
@@ -1650,7 +1652,7 @@ class PlayState extends MusicBeatState
 	}
 	function setupNoteBy(daStrumTime:Float, daNoteData:Int, susLength:Float, gottaHitNote:Bool, oldNote:Note, ?songNotes:Array<Dynamic>, ?altSec = false){
 		susLength = songNotes[2];
-		trace(susLength);
+	
 		if (!gottaHitNote) {
 			if (getPref("opponent")) {
 				pushEvent(daStrumTime, "volume", {v1: "1", v2:"1"});
@@ -1668,7 +1670,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		var swagNote:Note =  new Note();
-		trace(daStrumTime);
+	
 		swagNote.ID = unspawnNotes.length;
 		swagNote.prevNote = null;
 
@@ -1676,7 +1678,7 @@ class PlayState extends MusicBeatState
 		swagNote.sustainLength =susLength;
 		swagNote.altNote = songNotes[3];
 		swagNote.scrollFactor.set(0, 0);
-		trace(susLength);
+	
 		var strumLine:StrumArrow = (swagNote.mustPress ? playerStrums.members : player2Strums.members)[swagNote.noteData];
 		swagNote.strumLine = strumLine;
 		var speed = SONG.speed * getPref("song-speed");
@@ -1711,7 +1713,7 @@ class PlayState extends MusicBeatState
         events.push({time:time,type: type,data:data});
     }
     function onEvent(type:String, value1:String, value2:String) {
-			trace("New event " + type + "-" + value1 + "-" + value2 );
+		
            switch(type){
 				case "volume":
 					vocals.volume = 1;

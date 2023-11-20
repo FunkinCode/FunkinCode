@@ -1,7 +1,7 @@
 import animate.FlxAnimate;
 import animate.FlxSymbol;
 
-#if VIDEOS
+#if hxcodec
 import hxcodec.flixel.FlxVideo;
 #end
 

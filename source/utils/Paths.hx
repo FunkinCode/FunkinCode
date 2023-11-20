@@ -36,8 +36,6 @@ class Paths
 			|| !currentTrackedAssets.exists(key) 
 			)
 			return;
-		trace(key);
-		trace(graphic != null);
 	
 		@:privateAccess FlxG.bitmap._cache.remove(key);
 		currentTrackedAssets.remove(key);
@@ -302,7 +300,7 @@ class Paths
 
 		var path:String = getPath('$key',IMAGE, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
-		trace(path);
+	
 
 		if (currentTrackedAssets.exists(path))
 		{
@@ -339,7 +337,6 @@ class Paths
 	static  function _sound(key:String, library) {
 		var path:String = getPath('$key', SOUND, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
-		trace(path);
 
 		if(!currentTrackedSounds.exists(path))
 			currentTrackedSounds.set(path, Sound.fromFile('./' + path));

@@ -140,7 +140,7 @@ class ControlsMenu extends ui.OptionsState.Page
 
 	function createItem(x = 0.0, y = 0.0, control:Control, index:Int)
 	{
-		var item = new InputItem(x, y, currentDevice, control, index, function(?v) onSelect);
+		var item = new InputItem(x, y, currentDevice, control, index, function(?v) onSelect());
 		for (i in 0...controlGroups.length)
 		{
 			if (controlGroups[i].contains(control))
