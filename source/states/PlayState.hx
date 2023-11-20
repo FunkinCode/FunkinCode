@@ -215,13 +215,6 @@ class PlayState extends MusicBeatState
 
 		camPos = new FlxPoint(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y);
 
-		gf.x += gf.position[0];
-		gf.y += gf.position[1];
-		boyfriend.x += boyfriend.position[0];
-		boyfriend.y += boyfriend.position[1];
-		dad.x += dad.position[0];
-		dad.y += dad.position[1];
-
 		if (SONG.player2 == SONG.player3) {
 			dad.setPosition(gf.x, gf.y);
 			gf.visible = false;
@@ -235,6 +228,13 @@ class PlayState extends MusicBeatState
 		add(boyfriend);
 
 		add(foregroundSprites);
+
+		gf.x += gf.position[0];
+		gf.y += gf.position[1];
+		boyfriend.x += boyfriend.position[0];
+		boyfriend.y += boyfriend.position[1];
+		dad.x += dad.position[0];
+		dad.y += dad.position[1];
 
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
@@ -414,6 +414,8 @@ class PlayState extends MusicBeatState
 
 	public function playVideo(name:String)
 	{
+
+		#if VIDEOS
 		inCutscene = true;
 
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -434,6 +436,10 @@ class PlayState extends MusicBeatState
 
 		camFollow.x += 100;
 		camFollow.y += 100;
+		#else
+			trace("Invalid target");
+			startCountdown();
+		#end
 	}
 	function updateDiscord():Void {
 		

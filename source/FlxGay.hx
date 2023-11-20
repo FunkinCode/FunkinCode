@@ -5,7 +5,7 @@ import flixel.FlxGame;
 class FlxGay extends FlxGame {
 	override function switchState():Void
         {
-            // Basic reset stuff
+            // Basic reset 
             FlxG.cameras.reset();
             FlxG.inputs.onStateSwitch();
             #if FLX_SOUND_SYSTEM
@@ -31,11 +31,6 @@ class FlxGay extends FlxGame {
            // BAD MANNAGER BAF MANANGER
            Paths.destroyFlixelCache();
            FlxG.bitmap.clearCache();
-
-        
-         /*   Paths.clearMemory();
-        */
-         
 
             // Finally assign and create the new state
             _state = _requestedState;

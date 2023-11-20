@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.8" company="ninjamuffin99" />
+	<app title="Friday Night Funkin'" file="Funkin" packageName="com.mrniz.funkin" package="com.mrniz.funkin" main="Main" version="0.2.8" company="mrniz" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -41,8 +41,9 @@
 	<classpath name="source" />
 
 	<!-- <assets path='assets/preload/music' include="*mp4" embed='false' /> -->
-
+	<haxedef name="VIDEOS" if="windows linux" unless="neko" />
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
+	<assets path="assets/videos" rename="assets/videos" exclude="*.proj" if="VIDEOS"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
@@ -122,7 +123,7 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="hxCodec" />
+	<haxelib name="hxCodec" if="VIDEOS"/>
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="newgrounds"/>
@@ -133,7 +134,7 @@
 	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
 
 
-	<haxelib name="discord_rpc" if="cpp" unless="neko"/> <!-- foesn't work with neko, no le crean -->
+	<haxelib name="discord_rpc" if="cpp" unless="neko linux"/> <!-- foesn't work with neko, no le crean -->
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->

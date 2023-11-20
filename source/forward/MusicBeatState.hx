@@ -41,6 +41,11 @@ class MusicBeatState extends FlxUIState
 		//subState.camera = transitionCamera;
 	}
 	public function inittransitionCamera():FlxCamera {
+		if ( Type.getClass(FlxG.state) != states.PlayState)
+		{
+			transitionCamera = FlxG.camera;
+			return transitionCamera;
+		}
 		if (transitionCamera != null)
 			return transitionCamera;
 		transitionCamera = new FlxCamera();
@@ -52,7 +57,8 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
-		
+		if (FlxG.drawFramerate < 30)
+			FlxG.drawFramerate = FlxG.updateFramerate = 30;
 		if (FlxG.keys.justPressed.R)
 			{
 			trace("forcing reset of mods...");
