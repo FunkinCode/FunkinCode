@@ -10,7 +10,7 @@ class Script {
     public var name:String;
 
     public var ID:Int = 0;
-        var interp:Interp;
+    public var interp:Interp;
     public function new(data:String, ?manager:ScriptManager)
     {
         if (data == null)
@@ -53,7 +53,11 @@ class Script {
         var fields = Reflect.fields(curState);
         for (field in fields)
             {
+                try {
                 setVar(field, Reflect.getProperty(curState,field));
+            } catch(e) {
+                trace(e);
+            }
             }
         setVar("state", curState);
         setVar("Padre", curState);

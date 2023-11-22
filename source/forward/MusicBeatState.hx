@@ -16,16 +16,41 @@ class MusicBeatState extends FlxUIState
 	private var controls(get, never):Controls;
 	public var transitionCamera:FlxCamera;
 	public var camHUD:FlxCamera;
-	inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
+	public var scriptManager:ScriptManager;
+	inline function get_controls():Controls {
+		try{
+			return PlayerSettings.player1.controls;
+		} catch(e){
+			return null;
+		}
+	}
+	public function new() {
+		super();
+		stateClass = Type.getClass(this);
+        var className = Type.getClassName(stateClass);
+
+		scriptManager = new ScriptManager();
+		addScript(Paths.getDataPath() + 'global-script.hscript', false, "global-script");
+		addScript(Paths.getDataPath() + 'source/${className.split(".")[className.split(".").length-1]}.hscript',false,"state" );
+
+
+	}
+  var stateClass:Class<Dynamic>;
 
 	override function create()
 	{
+        var className = Type.getClassName(stateClass);
+
+
 		if (transIn != null)
 			trace('reg ' + transIn.region);
-
+		if (stateClass != states.PlayState)
+			callScripts("create");
 		super.create();
+		if (stateClass != states.PlayState)
+			callScripts("postCreate");
 		inittransitionCamera();	
+        trace(className);
 	}
 	function downloadFile(url, file) {
 		api.Iteractor.current.downloadArchive(url, file, function (){
@@ -36,6 +61,22 @@ class MusicBeatState extends FlxUIState
 	{
 		utils.Mods.createMod(n);
 	}
+	  public function addScript(path:String, ?justOneRun:Bool = false, name:String, ?customPatern:Dynamic)
+    {
+    	trace(path);
+    	if (name == null)
+	        name = path;
+	    var script = scriptManager.addScript(path, justOneRun, name, customPatern);
+	    scriptAdded(script, path, name, customPatern);
+    	return script;
+    } 
+	public function scriptAdded(script:Script, ?path:String, ?name:String, ?customPatern:Dynamic) {
+            callScripts("scriptAdded", script, path, name, customPatern);
+    }	
+      public function callScripts(fun:String, ...args:Dynamic):Dynamic {
+      	return scriptManager.callScripts(fun, ...args);
+      }
+
 	override function openSubState(substate:FlxSubState) {
 		super.openSubState(substate);
 		//subState.camera = transitionCamera;
@@ -54,6 +95,8 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
+		if (stateClass != states.PlayState)
+			callScripts("update");
 		if (FlxG.drawFramerate < 30)
 			FlxG.drawFramerate = FlxG.updateFramerate = 30;
 		if (FlxG.keys.justPressed.R)
@@ -101,15 +144,21 @@ class MusicBeatState extends FlxUIState
 	}
 	public function sectionHit():Void
 	{
+		
+			callScripts("sectionHit");
 	}
 	public function stepHit():Void
 	{
 		if (curStep % 4 == 0)
 			beatHit();
+		if (stateClass != states.PlayState)
+			callScripts("stepHit");
 	}
 
 	public function beatHit():Void
 	{
+		if (stateClass != states.PlayState)
+			callScripts("beatHit");
 		// do literally nothing dumbass
 	}
 }

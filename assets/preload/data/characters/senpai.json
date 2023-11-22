@@ -69,6 +69,6 @@
     360
  ],
  "flipX": false,
- "antialiasing": true,
+ "antialiasing": false,
  "flipY": false
 }

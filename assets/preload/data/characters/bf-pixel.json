@@ -105,6 +105,6 @@
   0
  ],
  "flipX": true,
- "antialiasing": true,
+ "antialiasing": false,
  "flipY": false
 }

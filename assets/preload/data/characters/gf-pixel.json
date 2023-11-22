@@ -63,7 +63,7 @@
    "animationLength": 4
   }
  ],
- "scale": [],
+ "scale": [6,6],
  "color": [],
  "danceSpeed": 2,
  "healthColor": [
@@ -72,6 +72,6 @@
   0
  ],
  "flipX": false,
- "antialiasing": true,
+ "antialiasing": false,
  "flipY": false
 }

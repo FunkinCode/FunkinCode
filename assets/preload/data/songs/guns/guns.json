@@ -4454,8 +4454,8 @@
     ]
    }
   ],
-  "stage": "stage",
-  "player3": "gf",
+  "stage": "tank",
+  "player3": "gf-tankmen",
   "events": []
  },
  "generatedBy": "SNIFF ver.6"

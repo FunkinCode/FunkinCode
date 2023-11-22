@@ -1,11 +1,11 @@
 function create()
 {
 
-	tankResetShit = false;
-	tankMoving = false;
-	tankAngle= FlxG.random.int(-90, 45);
-	tankSpeed= FlxG.random.float(5, 7);
-	tankX= 400;
+    tankResetShit = false;
+    tankMoving = false;
+    tankAngle= FlxG.random.int(-90, 45);
+    tankSpeed= FlxG.random.float(5, 7);
+    tankX= 400;
 
 
     defaultCamZoom = 0.90;
@@ -41,7 +41,7 @@ function create()
     add(smokeRight);
 
     // tankGround.
-    add(tankmanRun);
+  
 
     tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
     add(tankWatchtower);
@@ -49,6 +49,7 @@ function create()
     tankGroundRoll = new BGSprite('tankRolling', 300, 300, 0.5, 0.5, ['BG tank w lighting'], true);
     add(tankGroundRoll);
     // tankGround.active = false;
+    add(tankmanRun);
 
 
     tankGround = new BGSprite('tankGround', -420, -150);
@@ -58,7 +59,7 @@ function create()
 
     update(1 / 60);
     // smokeLeft.screenCenter();
-
+  
     fgTank0 = new BGSprite('tank0', -500, 650, 1.7, 1.5, ['fg']);
     foregroundSprites.add(fgTank0);
 
@@ -95,20 +96,14 @@ function repositionChars() {
     }
 }
 function update(elapsed) {
-    
+    tankMove();
+  
 }
-function tankMove() {
-    if (!state.inCutscene)
-		{
-			tankAngle += elapsed * tankSpeed;
-			tankGroundRoll.angle = tankAngle - 90 + 15;
-            trace(tankX);
-			tankGroundRoll.x = tankX + Math.cos(FlxAngle.asRadians((tankAngle ) + 180)) * 1500;
-			tankGroundRoll.y = 1300 + Math.sin(FlxAngle.asRadians((tankAngle) + 180)) * 1100;
-            FlxG.watch.addQuick("x", tankGroundRoll.x);
-            FlxG.watch.addQuick("angle", tankAngle);
-            FlxG.watch.addQuick("y", tankGroundRoll.y);
-		}
+function tankMove() {   
+    tankAngle += FlxG.elapsed * tankSpeed;
+    tankGroundRoll.angle = tankAngle - 90 + 15;
+    tankGroundRoll.x = tankX + Math.cos(FlxAngle.asRadians((tankAngle ) + 180)) * 1500;
+    tankGroundRoll.y = 1300 + Math.sin(FlxAngle.asRadians((tankAngle) + 180)) * 1100;
 }
 function beatHit() {
     if (tankWatchtower != null)

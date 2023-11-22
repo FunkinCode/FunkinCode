@@ -6,6 +6,7 @@ import haxe.display.Display.Package;
 
 class TankmenBG extends FlxSprite
 {
+	public static var offsetTime:Float = 1000 * 10;
 	public static var animationNotes:Array<Dynamic> = [];
 
 	public var strumTime:Float = 0;
