@@ -35,7 +35,7 @@ class CheatsManager {
         switch(curText)
         {
             case "BOTPLAY":
-               state.botplay = !state.botplay;
+               PlayState.botplay = !PlayState.botplay;
             case "KYS":
                 state.kys = true;
                 FlxG.sound.play(Paths.sound('fnf_loss_sfx'));

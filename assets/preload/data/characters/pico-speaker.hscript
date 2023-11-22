@@ -12,32 +12,53 @@ function init(name, path, id, patern) {
             patern.animationNotes.push(idk);
         }
     }
-    TankmenBG.animationNotes = patern.animationNotes;
+    TankmenBG.animationNotes = patern.animationNotes.copy();
     trace(patern.animationNotes);
+    patern.y = 0;
     patern.animationNotes.sort(patern.sortAnims);
 
     var tempTankman = new TankmenBG(20, 500, true);
     tempTankman.strumTime = 10;
     tempTankman.resetShit(20, 600, true);
+    tempTankman.alpha = 0.00001;
     tankmanRun.add(tempTankman);
-
-    for (i in 0...TankmenBG.animationNotes.length)
-    {
-        if (FlxG.random.bool(15))
-        {
-            var tankman= tankmanRun.recycle(TankmenBG);
-            // new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
-            tankman.strumTime = TankmenBG.animationNotes[i][0];
-            tankman.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
-            tankmanRun.add(tankman);
-        }
-    }
+ 
+   // state.defaultCamZoom = 0.5;
 
 }
 function update(elapsed) {
-    if (patern.animation.curAnim == null)
+    patern = globalPatern;
+    var calcCurTankmens = [];
+    tankmanRun.forEachAlive(function (tank) {
+        calcCurTankmens.push(tank);
+    });
+    var maxTankmens = state.getPref("low-resources") ? 4 : 15  ;
+    FlxG.watch.addQuick("curTanks", calcCurTankmens.length );
+    FlxG.watch.addQuick("curTanksToAdd", maxTankmens - calcCurTankmens.length );
+    FlxG.watch.addQuick("posibility", ((maxTankmens - calcCurTankmens.length) / maxTankmens) * 100);
+    FlxG.watch.addQuick("tank",TankmenBG.animationNotes.length);
+    if (TankmenBG.animationNotes[0].length > 0) {
+        if ((TankmenBG.animationNotes[0][0] - (1000 * 2.5))< Conductor.songPosition){
+        if (FlxG.random.bool(((maxTankmens - calcCurTankmens.length) / maxTankmens) * 100)) // this fix more lag issues
+            {
+                var tankman= new TankmenBG();
+                tankman.alpha = 1;
+
+                tankman.strumTime = TankmenBG.animationNotes[0][0];
+                tankman.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[0][1] < 2);
+                tankmanRun.add(tankman);
+            }
+            TankmenBG.animationNotes.shift();
+
+        }
+    }
+    
+    if (patern.animation.curAnim == null){
         return;
-    if (patern.animation.curAnim.finished)                
-        playAnim(patern.animation.curAnim.name, false, false, patern.animation.curAnim.numFrames - 3);
+    }
+    if (patern.animation.curAnim.finished){
+        patern.playAnim(patern.animation.curAnim.name, false, false, patern.animation.curAnim.numFrames - 3);
+
+    }          
                 
 }

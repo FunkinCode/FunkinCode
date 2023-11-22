@@ -1,13 +1,19 @@
 function init() {
     curLight=0;
     trainMoving = false;
-    trainFrameTiming = 0;
+    trainFrameTiming = 0.0;
 
 	trainCars = 8;
 	trainFinishing = false;
 	trainCooldown = 0;
 	startedMoving= false;
-
+    lightsGrop = new FlxGroup();
+    locallightFadeShader = new BuildingShaders();
+    trace("locallightFadeShader");
+    trace(locallightFadeShader);
+    phillyTrain = new FlxSprite(2000, 360);
+        trainSound = new FlxSound(); 
+        FlxG.sound.list.add(trainSound);
 }
 function create() 
     {
@@ -23,42 +29,44 @@ function create()
         city.updateHitbox();
         add(city);
 
-        lightFadeShader = new BuildingShaders();
-        phillyCityLights = new FlxTypedGroup();
-
-        add(phillyCityLights);
-
+     
+        trace(locallightFadeShader);
+    
         for (i in 0...5)
         {
+            trace(i);
             var light = new FlxSprite(city.x).loadGraphic(Paths.image('philly/win' + i));
             light.scrollFactor.set(0.3, 0.3);
-            light.visible = false;
+            light.visible = true;
             light.setGraphicSize(Std.int(light.width * 0.85));
             light.updateHitbox();
             light.antialiasing = true;
-            light.shader = lightFadeShader.shader;
-            phillyCityLights.add(light);
+            light.shader = locallightFadeShader.shader;
+            lightsGrop.add(light);
+            //add(light);
         }
+        trace(lightsGrop);
+        add(lightsGrop);
 
         var streetBehind = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
         add(streetBehind);
 
-        phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train'));
+        phillyTrain.loadGraphic(Paths.image('philly/train'));
         add(phillyTrain);
-
-        trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
-        FlxG.sound.list.add(trainSound);
-
+        trace(trainSound);
+        trainSound.loadEmbedded(Paths.sound('train_passes'));
         // var cityLights = new FlxSprite().loadGraphic(AssetPaths.win0.png);
 
         var street = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
         add(street);
     }
 function update(elapsed) {
-    case 'philly':
+    if (FlxG.keys.justPressed.X) {
+        startTrainMovement();
+    }
         if (trainMoving)
         {
-            trainFrameTiming += elapsed;
+            trainFrameTiming += FlxG.elapsed;
 
             if (trainFrameTiming >= 1 / 24)
             {
@@ -66,35 +74,42 @@ function update(elapsed) {
                 trainFrameTiming = 0;
             }
         }
-
-        lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
+        FlxG.watch.addQuick("a",trainFrameTiming);
+            FlxG.watch.addQuick("b",trainMoving);
+    FlxG.watch.addQuick("data", (Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
+    locallightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
     // phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 
 }
 function beatHit() {
-    if (!trainMoving)
+    if (!trainMoving){
         trainCooldown += 1;
+    }
 
     if (curBeat % 4 == 0)
     {
-        lightFadeShader.reset();
-
-        phillyCityLights.forEach(function(light)
+        locallightFadeShader.reset();
+        for (light in lightsGrop.members)
         {
+            light.alpha = 1;
             light.visible = false;
-        });
+        }
 
-        curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+        curLight = FlxG.random.int(0, lightsGrop.length - 1);
 
-        phillyCityLights.members[curLight].visible = true;
+        lightsGrop.members[curLight].visible = true;
         // phillyCityLights.members[curLight].alpha = 1;
     }
 
     if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
     {
+       startTrainMovement();
+    }
+}
+function startTrainMovement() {
+      trace("xd");
         trainCooldown = FlxG.random.int(-4, 0);
         trainStart();
-    }
 }
 function updateTrainPos()
 {
@@ -113,26 +128,26 @@ function updateTrainPos()
             phillyTrain.x = -1150;
             trainCars -= 1;
 
-            if (trainCars <= 0)
+            if (trainCars <= 0){
                 trainFinishing = true;
+            }
         }
 
-        if (phillyTrain.x < -4000 && trainFinishing)
+        if (phillyTrain.x < -4000 && trainFinishing){
             trainReset();
+        }
     }
 }
-function trainStart():
+function trainStart()
 {
     trainMoving = true;
     trainSound.play(true);
 }
-function trainReset():Void
+function trainReset()
 {
     gf.playAnim('hairFall');
     phillyTrain.x = FlxG.width + 200;
     trainMoving = false;
-    // trainSound.stop();
-    // trainSound.time = 0;
     trainCars = 8;
     trainFinishing = false;
     startedMoving = false;

@@ -19,7 +19,7 @@ class ChartingState extends MusicBeatState
 
 	var strumLine:FlxSprite;
 	var curSong:String = 'Dadbattle';
-	var diff:{diff:String, realDiff:Int} = {diff:"NORMAL", realDiff:1};
+	var diff:Int = 1;
 	var bullshitUI:FlxGroup;
 
 	var highlight:FlxSprite;
@@ -70,7 +70,7 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 			_song = Song.defaultSong;
-		diff = {realDiff:PlayState.storyDifficulty, diff: "NORMAL"};
+		diff =PlayState.storyDifficulty;
 		updateGridBG();
 		leftIcon = new HealthIcon('bf');
 		rightIcon = new HealthIcon('dad');
@@ -193,7 +193,9 @@ class ChartingState extends MusicBeatState
 		var changeDiff:FlxButton = new FlxButton(reloadSongJson.x - reloadSongJson.width - 10, reloadSongJson.y , "Change Diff", function()
 		{
 			var characters:Array<String> = ["EASY", "NORMAL", "HARD"];
-			openSubState(new CharacterList(characters[diff.realDiff], "diff",characters, "diff") );
+			openSubState(new CharacterList(characters, function (char){
+				diff = characters.indexOf(char);
+			}, characters[diff]) );
 		});
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
@@ -206,29 +208,31 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		
-
+	
 		var player1DropDown:FlxButton = new FlxButton(10, 100, 'Change bf', function(){
 			var characters:Array<String> = Paths.text(Paths.txt('characterList'), "").trim().rtrim().replace("\r","").split("\n");
 			characters.insert(0,"nothing");
-			openSubState(new CharacterList(_song.player1, "player1",characters) );
+			openSubState(new CharacterList(characters, function (s) _song.player1 = s,_song.player1) );
 		});
 
 		var player2DropDown:FlxButton = new FlxButton(140, 100, 'Change dad', function(){
 			var characters:Array<String> = Paths.text(Paths.txt('characterList'), "").trim().rtrim().replace("\r","").split("\n");
 			characters.insert(0,"nothing");
-			openSubState(new CharacterList(_song.player2, "player2",characters));
+			openSubState(new CharacterList(characters, function (s) _song.player2 = s,_song.player2) );
+
 		});
 		var girlfriendDropDown:FlxButton = new FlxButton(10, 100 + player2DropDown.height + 10,'Change gf', function(){
 			var characters:Array<String> = Paths.text(Paths.txt('characterList'), "").trim().rtrim().replace("\r","").split("\n");
 			characters.insert(0,"nothing");
-			openSubState(new CharacterList(_song.player3, "player3",characters));
+			openSubState(new CharacterList(characters, function (s) _song.player3 = s,_song.player3) );
+
 		});
 
 		var stageDropDown:FlxButton = new FlxButton(140, 100 + player2DropDown.height + 10,'Change stage', function(){
 			var stages:Array<String> = Paths.text(Paths.txt('stageList'), "").trim().rtrim().replace("\r","").split("\n");
 			stages.insert(0,"nothing");
-			openSubState(new CharacterList(_song.stage, "stage", stages));
+			openSubState(new CharacterList(stages, function (s) _song.stage = s,_song.stage) );
+
 		});
 
 		/*var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
@@ -724,12 +728,8 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
 		}
-		diff.realDiff = switch(diff.diff) {
-			case "EASY": 0;
-			case "HARD": 2;
-			default: 1;
-		};
-		PlayState.storyDifficulty = diff.realDiff;
+
+		PlayState.storyDifficulty = diff;
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
@@ -1109,7 +1109,7 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.storyDifficulty = diff.realDiff;
+		PlayState.storyDifficulty = diff;
 		var poop:String = Highscore.formatSong(song.toLowerCase(), PlayState.storyDifficulty);
 
 		PlayState.SONG = Song.loadFromJson(poop, song.toLowerCase());

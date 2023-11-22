@@ -1,5 +1,6 @@
 package states;
 
+import substates.CharacterList;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -19,6 +20,11 @@ using StringTools;
  */
 class AnimationDebug extends MusicBeatState
 {
+	public static var instance:AnimationDebug;
+	var _file:FileReference;
+	public var curStage:String = "stage";
+
+	var UI_box:FlxUITabMenu;
 	var bf:Boyfriend;
 	var dad:Character;
 	var char:Character;
@@ -52,31 +58,21 @@ class AnimationDebug extends MusicBeatState
 		mahBoa = new Character(0,0, daAnim);
 		mahBoa.screenCenter();
 		mahBoa.debugMode = true;
-		add(mahBoa);
+	
 		mahBoa.alpha = .5;
-		if (isDad)
-		{
-			dad = new Character(0, 0, daAnim);
-			dad.screenCenter();
-			dad.debugMode = true;
-			add(dad);
+		
+		dad = new Character(0, 0, daAnim);
+		dad.screenCenter();
+		dad.debugMode = true;
+		add(mahBoa);
+		add(dad);
 
-			char = dad;
-			dad.flipX = false;
-		}
-		else
-		{
-			bf = new Boyfriend(0, 0);
-			bf.screenCenter();
-			bf.debugMode = true;
-			add(bf);
-
-			char = bf;
-			bf.flipX = false;
-		}
+		char = dad;
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
+
+		char.dance();
 
 		textAnim = new FlxText(300, 16);
 		textAnim.size = 26;
@@ -92,9 +88,100 @@ class AnimationDebug extends MusicBeatState
 		FlxG.camera.follow(camFollow);
 		mahBoa.dance();
 
-		super.create();
-	}
+		var tabs = [
+			{name: "Assets", label: 'Assets'},
+			{name: "Animation", label: 'Animation'},
+		];
 
+		UI_box = new FlxUITabMenu(null, tabs, true);
+
+		UI_box.resize(300, 400);
+		UI_box.x = FlxG.width / 2;
+		UI_box.y = 20;
+		add(UI_box);
+
+		super.create();
+		addSongUI();
+	}
+	function addSongUI():Void
+		{
+			var tab_group_song = new FlxUI(null, UI_box);
+	
+			var curSprite = new FlxUIInputText(10, 10, 70, char.charFile.image, 8);
+	
+
+			var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
+			{
+				//saveLevel();
+			});
+	
+			var reloadSpr:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload image", function()
+			{
+				trace(curSprite.text);
+				//loadSong(_song.song);
+			});
+	
+			var reloadSongJson:FlxButton = new FlxButton(reloadSpr.x, saveButton.y + 30, "Reload JSON", function()
+			{
+				trace("test");
+			});
+	
+			var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', function loadAutosave(){trace("test");});
+	
+			var player1DropDown:FlxButton = new FlxButton(10,  reloadSongJson.y + 30, 'Change char', function(){
+				var characters:Array<String> = Paths.text(Paths.txt('characterList'), "").trim().rtrim().replace("\r","").split("\n");
+				openSubState( new CharacterList(characters, (data)->{
+					FlxG.switchState(new AnimationDebug(data));
+				}, char.curCharacter));
+			});
+	
+			var stageDropDown:FlxButton = new FlxButton(player1DropDown.x + player1DropDown.width + 1, player1DropDown.y,'Change stage', function(){
+				var stages:Array<String> = Paths.text(Paths.txt('stageList'), "").trim().rtrim().replace("\r","").split("\n");
+				openSubState( new CharacterList(stages, reloadStage, curStage));
+			});
+	
+			tab_group_song.name = "Assets";
+			UI_box.addGroup(tab_group_song);
+
+			tab_group_song.add(curSprite);
+			tab_group_song.add(saveButton);
+			tab_group_song.add(reloadSpr);
+			tab_group_song.add(reloadSongJson);
+			tab_group_song.add(loadAutosaveBtn);
+			tab_group_song.add(player1DropDown);
+			tab_group_song.add(stageDropDown);
+			UI_box.scrollFactor.set();
+	
+		}
+	function reloadStage(stage:String) {
+	
+		forEach(function (e) {
+			remove(e);
+		});
+		add(mahBoa);
+		add(dad);
+
+		add(UI_box);
+		add(dumbTexts);
+		add(textAnim);
+		add(camFollow);
+	
+		if ("default" == stage)
+			return;
+		
+		forEach(function (e) {
+			remove(e);
+		});
+		addScript(Paths.getDataPath() + 'stages/' + stage + ".hscript", false, "stage", this);
+		callScripts('create');
+		add(mahBoa);
+		add(dad);
+
+		add(UI_box);
+		add(dumbTexts);
+		add(textAnim);
+		add(camFollow);
+	}
 	function genBoyOffsets(pushList:Bool = true):Void
 	{
 		var daLoop:Int = 0;
@@ -131,7 +218,16 @@ class AnimationDebug extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		textAnim.text = char.animation.curAnim.name;
+		if (char.animation.curAnim != null)
+			textAnim.text = char.animation.curAnim.name;
+
+		mahBoa.flipX = char.flipX;
+		mahBoa.x = char.x;
+		mahBoa.y = char.y;
+		mahBoa.flipY = char.flipY;
+		mahBoa.antialiasing = char.antialiasing;
+		mahBoa.animationOffsets = char.animationOffsets;
+		
 		Conductor.songPosition += 1000 * elapsed;
 
 		if (FlxG.keys.justPressed.E)
@@ -178,7 +274,7 @@ class AnimationDebug extends MusicBeatState
 
 		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
 		{
-			char.playAnim(animList[curAnim]);
+			char.playAnim(animList[curAnim], true);
 			mahBoa.dance();
 
 			updateTexts();
@@ -228,7 +324,6 @@ class AnimationDebug extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	var _file:FileReference;
 
 	private function saveOffsets(saveString:String)
 	{

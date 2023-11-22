@@ -148,34 +148,12 @@ class Character extends SpriteBase
 		}
 		loadOffsetFile(curCharacter);
 
-		dance();
-		animation.finish();
+	
 		if (isPlayer)
 			flipX = !flipX; // When eres niz:
 		updateHitbox();
-        if (curCharacter == "pico-speaker")
-            loadMappedAnims();
-	
-	}
-
-	public function loadMappedAnims()
-	{
-		var swagshit = Song.loadFromJson('picospeaker', 'stress');
-        playAnim("shoot1");
-		var notes = swagshit.notes;
-
-		for (section in notes)
-		{
-			for (idk in section.sectionNotes)
-			{
-				animationNotes.push(idk);
-			}
-		}
-
-		TankmenBG.animationNotes = animationNotes;
-
-		trace(animationNotes);
-		animationNotes.sort(sortAnims);
+		dance();
+		animation.finish();
 	}
 
 	function sortAnims(val1:Array<Dynamic>, val2:Array<Dynamic>):Int
@@ -203,7 +181,7 @@ class Character extends SpriteBase
 		if (debugMode)
 			return;
 		if (animation.curAnim.name.startsWith('sing'))
-			holdTimer += elapsed;
+			holdTimer += FlxG.elapsed;
 		else
 			holdTimer = 0;
 			if (cpu)

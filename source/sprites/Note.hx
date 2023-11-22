@@ -44,13 +44,6 @@ class Note extends FlxSprite
 	var isPixel = false;
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
-	public function new()
-		{
-		super();
-		
-
-
-		}
 	public function setupNote(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		x = 0; // reset pos
@@ -161,7 +154,7 @@ class Note extends FlxSprite
 			{
 				prevNote.animation.play('${dirs[noteData]}hold');
 				var speed = PlayState.SONG.speed * PreferencesMenu.getPref("song-speed");
-				prevNote.scale.y *= (Conductor.stepCrochet ) / 100 * 1.5 * speed;
+				prevNote.scale.y *= (Conductor.stepCrochet ) / 100 * 1.55 * speed;
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}

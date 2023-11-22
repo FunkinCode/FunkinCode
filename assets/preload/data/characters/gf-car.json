@@ -6,7 +6,7 @@
    "name": "singUP",
    "prefix": "GF Dancing Beat Hair blowing CAR",
    "nextAnimation": "",
-   "indices": [],
+   "indices": [0],
    "offsets": [],
    "animationLength": 4
   },
@@ -16,21 +16,7 @@
    "FPS": 24,
    "nextAnimation": "",
    "indices": [
-    30,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14
+    30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
    ],
    "loop": false,
    "offsets": [],
@@ -41,8 +27,11 @@
    "prefix": "GF Dancing Beat Hair blowing CAR",
    "FPS": 24,
    "nextAnimation": "",
-   "indices": [],
+   "indices": [
+    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+   ],
    "offsets": [],
+   "loop": false,
    "animationLength": 4
   },
   {
@@ -51,12 +40,7 @@
    "FPS": 24,
    "nextAnimation": "",
    "indices": [
-    10,
-    11,
-    12,
-    25,
-    26,
-    27
+    10, 11, 12, 25, 26, 27
    ],
    "loop": true,
    "offsets": [],

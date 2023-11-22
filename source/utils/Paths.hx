@@ -319,6 +319,9 @@ class Paths
 			grabbedFiles.push(path);
 			return grap;
 		}
+		trace('foundedn\'t $path');
+		if (!path.endsWith(".png"))
+			return _image(path + ".png");
 
 		return null;
 	}

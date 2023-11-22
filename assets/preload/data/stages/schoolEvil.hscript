@@ -21,7 +21,6 @@ function postCreate() {
     gf.dance();
     dad.dance();
     state.cancelCountDown = false;
-    if (false)
     schoolIntro(doof);
     trace("Doof:");
     trace(doof);
@@ -65,7 +64,7 @@ function schoolIntro(dialogueBox)
             if (dialogueBox != null)
             {
 
-                inCutscene = true;
+                state.inCutscene = true;
 
                 remove(dialogueBox);
 
