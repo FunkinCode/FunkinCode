@@ -63,6 +63,9 @@ class MainMenuState extends MusicBeatState
 		bg.screenCenter();
 		bg.antialiasing = true;
 		add(bg);
+		api.Iteractor.current.getMod("1", (data)->{
+			trace(data);
+		});
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);

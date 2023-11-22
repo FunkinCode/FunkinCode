@@ -1,5 +1,6 @@
 package api;
 
+import sys.Unzipper;
 import sys.FileSystem;
 import api.routes.Mod;
 import api.routes.SwagID;
@@ -9,6 +10,8 @@ import api.routes.UserModsSuscribed;
 
 class Iteractor {
     private var cache:Map<String, String> = [];
+
+    public var API_BASE_URL:String = "https://8328-179-6-170-170.ngrok-free.app/api/v1";
 
     private var users:Map<String, User> = [];
     private var mods:Map<String, Mod> = [];
@@ -24,7 +27,9 @@ class Iteractor {
     function set_token(token:String):String {
         return token;
     }
-
+    public function getAPIURL(_key:String) {
+        return API_BASE_URL + _key;
+    }
     public function getUser(ID:String, onFetch:(user:User)->Void) {
         if (users.exists(ID)){
             onFetch(users.get(ID));
@@ -92,10 +97,38 @@ class Iteractor {
         cache = new Map();
         token = "test-token";
     }
-    public function getModsSuscribed(onData:(data:UserModsSuscribed)->Void) {
-        getUser('482637805034668032', (user:User)->{
-            onData({ID: user.ID, user: user, mods: []});
+    public function getMod(mod:String, onData:(data:Mod)->Void) {
+        getText(getAPIURL('/mod/$mod/'), function a(data) {
+            var mod:Mod = cast data;
+            onData(mod);
+            
+            trace(mod.author.avatarURL);
+            trace(mod.downloadLink);
+            if (!FileSystem.exists("_cache/"))
+                FileSystem.createDirectory("_cache/");
+            downloadArchive(mod.author.avatarURL, "_cache/avatar-2.png", ()->trace("Se descargó papu"));
+            downloadArchive(mod.downloadLink, "_cache/mod.zip", ()->{
+                trace("Se descargó papu");
+
+                try {
+                    Unzipper.unzip("_cache/mod.zip", "_cache/mod/");
+                } catch(e ){
+                    trace(e);
+                }
+            });
+            
+
         });
+    }
+    public function getModsSuscribed(onData:(data:UserModsSuscribed)->Void) {
+        /*getText(getAPIURL('/mod/1/'), function a(data) {
+            var
+            onData(cast data);
+            downloadArchive()
+        })*/
+        //getUser('482637805034668032', (user:User)->{
+          //  onData({ID: user.ID, user: user, mods: []});
+        //});
         /*return  {
             ID: "482637805034668032",
             user: cast ,
