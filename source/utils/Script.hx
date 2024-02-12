@@ -50,15 +50,11 @@ class Script {
         var curState = FlxG.state;
         var stateClass = Type.getClass(FlxG.state);
         var className = Type.getClassName(stateClass);
-        var fields = Reflect.fields(curState);
-        for (field in fields)
-            {
-                try {
-                setVar(field, Reflect.getProperty(curState,field));
-            } catch(e) {
-                trace(e);
-            }
-            }
+   
+        if (inited)
+            return;
+        inited = true;
+
         setVar("state", curState);
         setVar("Padre", curState);
         setVar("Patern", stateClass);
