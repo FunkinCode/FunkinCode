@@ -1,0 +1,5 @@
+PROP GET COLOR GOTO PATERN GET COLOR GOTO ARGB(255, 0 , 0, 255); then $FINISH() 
+
+--- Dont muove tdat , i trying to majekes  an svriptcript 
+define script name $"diff-insane-scriptcolor"
+define script ID $Scripts.GET_valid.ID()
