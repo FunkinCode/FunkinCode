@@ -15,9 +15,16 @@ class Paths
 	public static var currentLevel:String;
 
 	public static var currentTrackedSounds:Map<String, Sound> = [];
-	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
+	public static var currentTrackedGraphics:Map<String, FlxGraphic> = [];
 	public static var debug_file_getter:Array<String> = [];
 	public static var grabbedFiles:Array<String> = [];
+	/**
+	 * THANKS TO PSYCH ENGINE DEVS FOR THIS BASE CODE
+	 * 
+	 * all credits for em,!!! they are cool people
+	 * 
+	 * no se hablar ingles
+	 * **/
 	public static var dontDeleteMePlease:Array<String> = [
 		"assets/images/alphabet.png",
 		"assets/images/fonts/bold.png",
@@ -28,33 +35,30 @@ class Paths
 		'assets/sounds/scrollMenu.$SOUND_EXT',
 		'assets/sounds/confirmMenu.$SOUND_EXT'
 	];
-	public static function removeGraphicCache(graphic:FlxGraphic, ?key:String, destroy:Bool = true) {
-		if (graphic == null 
-			|| graphic == TitleState.diamond
-			|| dontDeleteMePlease.contains(key) 
-			|| !grabbedFiles.contains(key)  
-			|| !currentTrackedAssets.exists(key) 
-			)
-			return;
-	
+	/**
+	 *  THIS SYSTEM IS TOTALLY BASED ON PSYCH ENGINE SYSTEM;
+	 * MODIFIED TO UNLOAD MEMORY BY CHANGING STATE AN SPECIFICS STATES
+	 * UHM, I MEAN
+	 * HI :D
+	 * **/
+	 
+	 public static var FORCE:Bool = false;
+	 public static function removeGraphicCache(graphic:FlxGraphic, ?key:String, destroy:Bool = true) {
+		if (graphic == null) return;
 		@:privateAccess FlxG.bitmap._cache.remove(key);
-		currentTrackedAssets.remove(key);
+		currentTrackedGraphics.remove(key);
 
 		openfl.Assets.cache.removeBitmapData(key);
 		grabbedFiles.remove(key);
-		if (!destroy)
-			return;
+	
 		graphic.persist = false; 
 		graphic.destroyOnNoUse = true;
 		graphic.destroy();
 	}
 	public static function removeSoundCache(key:String) {
-		if (key == null 
-			|| dontDeleteMePlease.contains(key) 
-			|| !grabbedFiles.contains(key))
-			return;
 		Assets.cache.clear(key);
 		grabbedFiles.remove(key);
+		final snd = currentTrackedSounds.get(key);
 		currentTrackedSounds.remove(key);
 	}
 	public static function destroyFlixelCache() {
@@ -65,9 +69,12 @@ class Paths
 			removeGraphicCache(obj, key, false);
 		}
 	}
-	public static function clearUnusedMemory() {
-		for (key in currentTrackedAssets.keys()) {
-			var obj:FlxGraphic = currentTrackedAssets.get(key);
+	public static function clearUnusedMemory(f:Bool = false) {
+		trace("deleting bad ram!!!");
+		FORCE = f;
+		grabbedFiles = [];
+		for (key in currentTrackedGraphics.keys()) {
+			var obj:FlxGraphic = currentTrackedGraphics.get(key);
 			removeGraphicCache(obj, key);
 
 		}
@@ -76,6 +83,8 @@ class Paths
 		}
 		
 		openfl.system.System.gc();
+		currentTrackedGraphics = [];
+		currentTrackedSounds = [];
 	}
 	public static function cacheData(){
 		Thread.create(()->{
@@ -136,8 +145,11 @@ class Paths
 				if (checkFormatsExisting(file, [".png", ".jpg", ".jpeg", ".gif", ""]))
 					return true;
 				case TEXT:
-				if (checkFormatsExisting(file, [".txt", ".hscript", ".json", ".data", ".raw", ".pkg", ".trans", ".file", ""]))
+				if (checkFormatsExisting(file, [".txt", ".hscript", ".json", ".data", ".raw", ".pkg", ".trans", ".file",".hx",".hs", ".hxs", ""]))
 					return true;
+				case SOUND:
+					if (checkFormatsExisting(file, [".ogg", ".wav", ""]))
+						return true;
 				default:
 					return FileSystem.exists(file);
 
@@ -149,7 +161,7 @@ class Paths
 	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
 		var path = file;
-		if (path.startsWith("assets") || path.startsWith("mods") || path.startsWith("./"))
+		if (path.startsWith("assets") || path.startsWith("mods") || path.startsWith("./") || path.startsWith("funkin"))
 			return path;
 		if (library != null)
 			path = getLibraryPath(file + _format, library);
@@ -163,10 +175,12 @@ class Paths
 			}
 		if (library == "songs")
 			{
-				path = 'songs:assets/songs/' + file;
+				path = 'assets/songs/' + file;
 
 				if (exists('mods/${currentMod}/songs/' + file, SOUND))
 					path = 'mods/${currentMod}/songs/' + file;
+				if (exists('funkin/songs/' + file, SOUND))
+					path = 'funkin/songs/' + file;
 			}
 		if(currentMod != "") {
 			if (exists('mods/${currentMod}/${file}', type))
@@ -187,7 +201,9 @@ class Paths
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 		}*/
+		if (exists('funkin/' + file, type)) path ='funkin/' + file + _format;
 		if (exists('assets/' + file, type)) path = getPreloadPath(file + _format); // just to take da format xdxd
+		if (exists('assets/${library}/$file', type)) path = 'assets/${library}/$file${_format}';
 		return path;
 	}
 
@@ -228,7 +244,7 @@ class Paths
 
 	static public function sound(key:String, ?library:String)
 	{
-		return _sound('sounds/$key.$SOUND_EXT', library);//getPath('sounds/$key.$SOUND_EXT', SOUND, library);
+		return _sound(getPath(key.startsWith("./" ) || key.startsWith("/") ? key  : 'sounds/$key', SOUND, library), library);//getPath('sounds/$key.$SOUND_EXT', SOUND, library);
 	}
 
 	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String)
@@ -249,7 +265,16 @@ class Paths
 	{
 		return _sound('${song.toLowerCase()}/Voices.$SOUND_EXT', "songs");//'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
+	inline static public function readDir(dir:String) {
+		if (!dir.startsWith("./"))
+			dir = './$dir';
+		var path = FileSystem.absolutePath(dir);
+		return FileSystem.readDirectory(path);
+	}
+	inline static public function hasVocals(song:String) {
+		return _sound('${song.toLowerCase()}/Voices.$SOUND_EXT', "songs") != null;// true;
 
+	}
 	inline static public function inst(song:String)
 	{
 		return  _sound('${song.toLowerCase()}/Inst.$SOUND_EXT', "songs");//'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
@@ -300,22 +325,24 @@ class Paths
 
 		var path:String = getPath('$key',IMAGE, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
+	if (!path.startsWith("./"))
+		path = './'+path;
+	var path = FileSystem.absolutePath(path);
 	
-
-		if (currentTrackedAssets.exists(path))
+		if ( currentTrackedGraphics.get(path) != null)
 		{
-			return currentTrackedAssets.get(path);
+			return currentTrackedGraphics.get(path);
 		} else {
 			try {
 				bit = BitmapData.fromFile(path);
-			} catch (e) {}
+			} catch (e) {trace(e);}
 		}
 		if (bit != null){
 			var grap:FlxGraphic = FlxGraphic.fromBitmapData(bit, false, path);
 			grap.persist = true;
 			grap.destroyOnNoUse = false;
 			debug_file_getter.push(path);
-			currentTrackedAssets.set(path, grap);
+			currentTrackedGraphics.set(path, grap);
 			grabbedFiles.push(path);
 			return grap;
 		}
@@ -335,14 +362,15 @@ class Paths
 	}
 	public static function getDataPath()
 	{
-		return currentMod == "" ? "assets/data/": 'mods/$currentMod/data/';
+		return currentMod == "" ? "assets/data/": currentMod == "funkin" ? "funkin/data/" : 'mods/$currentMod/data/';
 	}
 	static  function _sound(key:String, library) {
-		var path:String = getPath('$key', SOUND, library);
+		var path:String = key.contains("assets/" + library) || key.contains("./")  || key.startsWith("/")? key : getPath('$key', SOUND, library);
 		path = path.substring(path.indexOf(':') + 1, path.length);
-
+		if (!path.startsWith("./") && !path.startsWith("/"))
+			path = './$path';
 		if(!currentTrackedSounds.exists(path))
-			currentTrackedSounds.set(path, Sound.fromFile('./' + path));
+			currentTrackedSounds.set(path, Sound.fromFile( path));
 	
 		debug_file_getter.push(path);
 		grabbedFiles.push(path);
