@@ -1,28 +1,9 @@
 package states;
 
-import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionableState;
+import utils.Version;
 import flixel.effects.FlxFlicker;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.ui.FlxButton;
-import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
-import lime.app.Application;
-import ui.AtlasMenuList;
-import ui.MenuList;
-import ui.OptionsState;
-import ui.PreferencesMenu;
-import ui.Prompt;
 
 using StringTools;
-
 #if newgrounds
 import io.newgrounds.NG;
 import ui.NgPrompt;
@@ -30,15 +11,26 @@ import ui.NgPrompt;
 
 class MainMenuState extends MusicBeatState
 {
+	public static var instance:MainMenuState;
 	var menuItems:MainMenuList;
 
 	var magenta:FlxSprite;
+	var bg:FlxSprite ;
 	var camFollow:FlxObject;
 	public static var index:Int = 0;
 
-
+	override function onResize(Width:Int, Height:Int) {
+		super.onResize(Width, Height);
+		bg.setGraphicSize(Math.floor(FlxG.width * 1.1));
+		bg.updateHitbox();
+		bg.screenCenter();
+		magenta.setGraphicSize(Std.int(bg.width));
+		magenta.updateHitbox();
+		magenta.screenCenter();
+	}
 	override function create()
 	{
+		instance = this;
 		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -55,10 +47,10 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
+		bg= new FlxSprite(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.17;
-		bg.setGraphicSize(Std.int(bg.width * 1.2));
+		bg.setGraphicSize(Std.int(FlxG.width * 1.2));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -100,40 +92,50 @@ class MainMenuState extends MusicBeatState
 		#if CAN_OPEN_LINKS
 		var hasPopupBlocker = #if web true #else false #end;
 
-		if (VideoState.seenVideo)
+		/*if (VideoState.seenVideo)
 			menuItems.createItem(0,0,'kickstarter', function(?v) selectDonate(), hasPopupBlocker);
 		else
-			menuItems.createItem(0,0,'donate', function(?v) selectDonate(), hasPopupBlocker);
+			menuItems.createItem(0,0,'donate', function(?v) selectDonate(), hasPopupBlocker);*/
 		#end
 		menuItems.createItem(0,0,'options', function(?v) startExitState(new OptionsState()));
+
+		menuItems.createItem(0,0,'options', function(?v) startExitState(new MainMenuState()));
+		menuItems.createItem(0,0,'options', function(?v) startExitState(new MainMenuState()));
+		menuItems.createItem(0,0,'options', function(?v) startExitState(new MainMenuState()));
 		// #if newgrounds
 		// 	if (NGio.isLoggedIn)
 		// 		menuItems.createItem("logout", selectLogout);
 		// 	else
 		// 		menuItems.createItem("login", selectLogin);
 		// #end
+		FlxGay.waitDeleteRam = false;
 
 		// center vertically
-		var spacing = 160;
+		var scale =  5 /  (menuItems.length - 1);
+		var spacing = (160 * 0.9) * scale;
 		var top = (FlxG.height - (spacing * (menuItems.length - 1))) / 2;
 		for (i in 0...menuItems.length)
 		{
 			var menuItem = menuItems.members[i];
-			menuItem.x = FlxG.width / 2;
-			menuItem.y = top + spacing * i;
+			menuItem.scale.set(0.25,0.25);
+			menuItem.alpha = 0.3;
+			menuItem.x =FlxG.width / 2;
+			menuItem.scrollFactor.set(0,0.6);
+			menuItem.y =2000; // make sure is down 
+			FlxTween.tween(menuItem, {alpha: 1, x: FlxG.width / 2, y:top + spacing * i, "scale.x": 0.95  * scale, "scale.y": 0.95 * scale},1.0, {startDelay: 0.005 + ( 0.05 * i), ease: FlxEase.cubeInOut, onUpdate: function(e) {
+				if (i == index)
+				onMenuItemChange(menuItem);
+			}});
 		}
 
 		FlxG.cameras.reset(new SwagCamera());
 		FlxG.camera.follow(camFollow, null, 0.06);
+		var v = Version.display();
 		// FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
-		var xd = "v" + Application.current.meta.get('version');
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "", 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - ((v.split("\n").length ) * 16) , 0, v, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-
-		versionShit.text += '(Newgrounds exclusive preview)';
-
 		// NG.core.calls.event.logEvent('swag').send();
 		@:privateAccess menuItems.selectItem(index);
 		super.create();
@@ -155,6 +157,8 @@ class MainMenuState extends MusicBeatState
 	{
 		index =  menuItems.selectedIndex;
 		camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
+		if (camFollow.y >( magenta.y + magenta.height )- 160)
+			camFollow.y = (magenta.y + magenta.height) - 160;
 	}
 
 	#if CAN_OPEN_LINKS
