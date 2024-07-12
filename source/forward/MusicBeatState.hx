@@ -1,5 +1,7 @@
 package forward;
 
+import flixel.addons.util.FlxFSM.Transition;
+import openfl.events.KeyboardEvent;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.addons.transition.FlxTransitionableState;
@@ -24,12 +26,30 @@ class MusicBeatState extends FlxUIState
 			return null;
 		}
 	}
+	public override function destroy() {
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+
+		super.destroy();
+	}
+	public override function add(obj:FlxBasic) {
+		return super.add(obj);
+		
+	}
+	public function onFileDropped(str:String) {}
 	public function new() {
 		super();
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+		
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+
 		stateClass = Type.getClass(this);
         var className = Type.getClassName(stateClass);
 
 		scriptManager = new ScriptManager();
+		scriptManager.addVariable("curStep");
+		scriptManager.addVariable("curSection");
+		scriptManager.addVariable("curBeat");
 		addScript(Paths.getDataPath() + 'global-script.hscript', false, "global-script");
 		addScript(Paths.getDataPath() + 'source/${className.split(".")[className.split(".").length-1]}.hscript',false,"state" );
 
@@ -92,10 +112,82 @@ class MusicBeatState extends FlxUIState
 		transitionCamera = camHUD;
 		return transitionCamera;
 	}
+	private function onKeyPress(event:KeyboardEvent):Void
+	{
+		var input = resolveKey(event.keyCode);
+		updateInput(input);
+		
+	}
+	private function resolveKey(key:FlxKey):InputKey {
+		try {
+		return {
+			name: key.toString(),
+			ID: key,
+			type: FlxG.keys.checkStatus(key, JUST_PRESSED) ? JUST_PRESSED : FlxG.keys.checkStatus(key, RELEASED) ?RELEASED : NONE
+		};
+	}catch(e) {
+	
+	}
+	return {
+		name: key.toString(),
+		ID: key,
+		type: NONE
+	};
+	}
+	public static var outValues:Float = -2; 
+	public function setOutvalues(s:Float = -1) {
+		outValues = s;
+	}
+	public static var inValues:Float = 2; 
+	public function setInvalues(s:Float = 1) {
+		inValues = s;
+	}
+	override function createTransition(data:TransitionData):flixel.addons.transition.Transition {
+		if (data.type == FADE)
+			return new substates.Transition(data);
+		return super.createTransition(data);
+	}
+	private function onKeyRelease(event:KeyboardEvent):Void
+	{
+		var input = resolveKey(event.keyCode);
+		updateInput(input);
+	
+	}
+	public function updateInput(key:InputKey) {
+		FlxG.watch.addQuick("Key", key.name);
+		FlxG.watch.addQuick("Keyid", key.ID);
+		if (key.type == JUST_PRESSED)
+			keyJustPressed(key);
+		if (key.type == RELEASED)
+			keyReleased(key);
+	}
+	public function keyJustPressed(key:InputKey) {
 
+	}
+	public function keyReleased(key:InputKey) {
+
+	}
+	public function fixDir(dir:String) {
+		return CoolUtil.fixDir(dir);
+	}
 	override function update(elapsed:Float)
 	{
-		if (stateClass != states.PlayState)
+		
+		if ( PreferencesMenu.getPref("maximize"))
+		Lib.application.window.maximized= PreferencesMenu.getPref("maximize");
+		if (camHUD != null && subState != null)
+			subState.camera = camHUD;
+		if (FlxG.keys.pressed.ALT) {
+			if (FlxG.keys.pressed.I) {
+				Main._width += 1;
+				Main.resize(Main._width, Main._height);
+			}
+			if (FlxG.keys.pressed.K) {
+				Main._height += 1;
+				Main.resize(Main._width, Main._height);
+			}
+		}
+ 		if (stateClass != states.PlayState)
 			callScripts("update");
 		if (FlxG.drawFramerate < 30)
 			FlxG.drawFramerate = FlxG.updateFramerate = 30;
@@ -111,6 +203,7 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		updateBeat();
+
 		if (!dontchangesectionplz)
 		curSection = Math.floor(curStep / 16);
 		if (oldSection != curSection)
@@ -118,8 +211,9 @@ class MusicBeatState extends FlxUIState
 
 		if (oldStep != curStep && curStep >= 0)
 			stepHit();
-
+	
 		super.update(elapsed);
+	
 	}
 
 	private function updateBeat():Void
