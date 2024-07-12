@@ -21,20 +21,23 @@ class HealthIcon extends FlxSprite
 		this.isPlayer = isPlayer;
 
 		changeIcon(char);
+		lastIcon = char;
 		antialiasing = true;
 		scrollFactor.set();
 	}
+	public var lastIcon:String;
 
 	public var isOldIcon:Bool = false;
 
 	public function swapOldIcon():Void
 	{
 		isOldIcon = !isOldIcon;
-
+		if (char != 'bf-old')
+		 lastIcon = char;
 		if (isOldIcon)
 			changeIcon('bf-old');
 		else
-			changeIcon(PlayState.SONG.player1);
+			changeIcon(lastIcon);
 	}
 
 	public function changeIcon(newChar:String):Void

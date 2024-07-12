@@ -10,12 +10,13 @@ import discord_rpc.DiscordRpc;
 
 class DiscordClient
 {
+	public static final _appID:String = "972989546813861909";
 	#if discord_rpc
 	public function new()
 	{
 		trace("Discord Client starting...");
 		DiscordRpc.start({
-			clientID: "972989546813861909",
+			clientID: _appID,
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected

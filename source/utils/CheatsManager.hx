@@ -35,7 +35,7 @@ class CheatsManager {
         switch(curText)
         {
             case "BOTPLAY":
-               state.botplay = !state.botplay;
+               PlayState.botplay = !PlayState.botplay;
             case "KYS":
                 state.kys = true;
                 FlxG.sound.play(Paths.sound('fnf_loss_sfx'));
@@ -83,10 +83,10 @@ class CheatsManager {
             }
         FlxG.watch.addQuick("CheatCode.data", curText);
         if (FlxG.keys.justPressed.ANY){
-            var key = FlxG.keys.getIsDown()[0];
+            var key:FlxKey = FlxG.keys.firstJustPressed();
             
             _holdTime = 0;
-            curText += key.ID.toString();
+            curText += key.toString();
             onTextCheck();
         }
         if (curText.length > 16)

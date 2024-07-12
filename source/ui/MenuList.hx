@@ -88,7 +88,15 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 			case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P  , controls.UI_DOWN_P , wrapY);
 			case Rows   (num): navGrid(num, controls.UI_UP_P  , controls.UI_DOWN_P , wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
 		}
-		
+		if (Math.abs(FlxG.mouse.wheel) > 0) {
+			newIndex = newIndex + (FlxG.mouse.wheel < 0 ? -1 : 1);
+			if (newIndex < 0)
+				newIndex = length - 1;
+			if (newIndex >= length)
+				newIndex = 0; //invalid first pos?
+		}
+	
+	
 		if (newIndex != selectedIndex)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -96,7 +104,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		}
 		
 		//Todo: bypass popup blocker on firefox
-		if (controls.ACCEPT && !selectedItem.isFloatMovement)
+		if ((controls.ACCEPT || FlxG.mouse.justPressed) && !selectedItem.isFloatMovement)
 			accept();
 		else if (selectedItem.isFloatMovement) {
 			if (selectedItem.justPress){
@@ -119,15 +127,17 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		if (prev == next)
 			return index;
 		var lastIndex:Int = index;
+		var loops = 0;
 		do {
-			if (lastIndex == index){
+			if (lastIndex == index &&  loops > 5){
 				index += prev ? -1 : 1;
 				if (index < 0)
 					index = size - 1;
 				if (index >= size)
-					index = 1;//invalid first pos?
+					index = 0; //invalid first pos?
 				break;
 			}
+			loops ++;
 			if (prev)
 			{
 				if (index > 0)
@@ -206,13 +216,20 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	}
 	public function selectItem(index:Int)
 	{
+		if (selectedIndex == index)
+			return;
+		try {
 		members[selectedIndex].idle();
 		
 		selectedIndex = index;
 		
 		var selected = members[selectedIndex];
 		selected.select();
+		
 		onChange.dispatch(selected);
+		} catch(err) {
+			error(err);
+		}
 	}
 	
 	public function has(name:String)

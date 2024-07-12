@@ -2,18 +2,19 @@ package substates;
 
 class CharacterList extends MusicBeatSubstate {
 
+    public var list:Array<String>;
+    public var oldOnTheList:String;
+    public var finishCallBack:(data:String)->Void;
+
     public var curSelected:Int = 0;
-    public var curChar:String;
-    public var variable_to_modify:String;
-    public var characterList:Array<String>;
-    public var variableFromMe:String = "_song";
     public var grpMenuShit:FlxTypedGroup<Alphabet>;
-    public function new(curChar, variable_to_modify:String, characterList:Array<String>, ?variableFromMe:String = "_song") {
+    public function new(list:Array<String>, finishCallBack:(data:String)->Void, ?oldOntheList:String = "nothing") {
         super();
-        this.curChar = curChar;
-        this.variableFromMe = variableFromMe;
-        this.characterList = characterList;
-        this.variable_to_modify = variable_to_modify;
+        this.list = list;
+        this.finishCallBack = finishCallBack;
+        this.oldOnTheList = oldOntheList;
+    }
+    public override function create() {
         var fg:FlxSprite = new FlxSprite();
         fg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         fg.screenCenter();
@@ -45,12 +46,11 @@ class CharacterList extends MusicBeatSubstate {
 
 		if (accepted)
 		{
-            @:privateAccess
-           Reflect.setProperty(  Reflect.getProperty(ChartingState.instance, variableFromMe), variable_to_modify, chars[curSelected]);
-
+            try {
+                finishCallBack(list[curSelected]);
+            } catch(e) {}
            close();
-           @:privateAccess
-           ChartingState.instance.updateHeads();
+        
         }  
         
 	}
@@ -61,7 +61,7 @@ class CharacterList extends MusicBeatSubstate {
                 grpMenuShit.remove(grpMenuShit.members[0], true);
             }
         
-		var characters:Array<String> = characterList;
+		var characters:Array<String> = list;
         chars = characters;
         for (i in 0...characters.length)
             {
@@ -71,7 +71,7 @@ class CharacterList extends MusicBeatSubstate {
                 songText.scrollFactor.set();
                 grpMenuShit.add(songText);
             }
-        curSelected = characters.indexOf(curChar);
+        curSelected = characters.indexOf(oldOnTheList);
         if (curSelected < 0)
             curSelected = 0;
         changeSelection();

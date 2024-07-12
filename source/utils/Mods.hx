@@ -10,18 +10,20 @@ typedef ModsPack = {
     var ver:String;
     var repo:String;
     var priority:Int;
+    var ?dir:String;
     var author:String;
     var needsRestartWhenLoading:Bool;
     var useASGlobal:Bool;
     var canCheat:Bool;
+    var overrideMod:Bool;
 }
 
 class Mods {
     public static var mods:Array<String> = [];
     public static var directory = {type: "dir", content: null};
     public static var file = {type: "file", content: ""};
-    
-
+    public static var enabledMods:Map<String, Bool> = [];
+    public static var overrideMods:Array<String> = [];
     private static var _BaseMod:Map<String, {type:String, content:String}> = [
         /**
             Dirs
@@ -64,38 +66,113 @@ class Mods {
 
     public static function readMods()
         {
-            mods = [];
+            mods = getModsByFile();
+            overrideMods = [];
+            if (!FileSystem.exists('debugMod'))
+                createMod("debugMod", '');
+            if (!FileSystem.exists('funkin'))
+                createMod("funkin", '');
+            if (!FileSystem.exists('assets')) // wEIRD. 
+                createMod("assets", '');
             if (!FileSystem.exists("mods"))
                 FileSystem.createDirectory("mods");
 
-            var mdos  = FileSystem.readDirectory("mods");
+            var mdos  = Paths.readDir("mods");
             trace(mdos);
             for (mod in mdos ) {
                 var mod_path = 'mods/$mod';
-                trace(mod_path);
                 if (FileSystem.exists(mod_path) && FileSystem.isDirectory(mod_path)) {
-                    if (FileSystem.exists('$mod_path/pack.json'))
+                    if (FileSystem.exists('$mod_path/pack.json') && !mods.contains(mod))
                         {
                             trace('Tracked mod in $mod_path!');
                             mods.push(mod);
+                            var modData = Json.parse(File.getContent('$mod_path/pack.json'));
+                            modData.dir = mod;
+                            if (modData.overrideMod || modData.useASGlobal)
+                                overrideMods.push(mod);
                         }
                 }
             }
+            for (i in mods)
+            {
+                if (!FileSystem.exists('mods/$i') || i.length < 1)
+                    mods.remove(i);
+            }
+            importEnabled();
+
+            saveFile();
+
         }
-    
+    public static function moveMod(from:Int, to:Int){
+        var oldMod1 = mods[from];
+        var oldMod0 = mods[to];
+
+        mods[from] = oldMod0;
+        mods[to] = oldMod1;
+        saveFile();
+    }
+    public static function getModsByFile() {
+        if (!FileSystem.exists("mods/modList.txt")) 
+            return [];
+        var files = File.getContent('mods/modList.txt').split("\n");
+        var data = [];
+        for ( file in files) {
+            data.push(file.split("|")[0]);
+        }
+        return data;
+    }
+     public static function importEnabled() {
+        if (!FileSystem.exists("mods/modList.txt")) 
+            return [];
+        var files = File.getContent('mods/modList.txt').split("\n");
+        var data = [];
+        for ( file in files) {
+            var xd = file.split("|");
+        enabledMods.set(xd[0], (xd[1] == "null" ? true : (xd[1] == "true" || xd[1] == "1" ||xd[1] == "si")));
+
+        }
+        return data;
+    }
     public static function getWeeks()
     {
         return Week.getWeeks();
     }
-    public static function createMod(name = "test") {
-        var mod_path = 'mods/$name';
-        readMods();
+    public static function toggleMod(modPath:String) {
+        enabledMods.set(modPath,!isEnabled(modPath));
+    }
+    public static function getCurMods() {
+        var a = [getMetaData('funkin', 'funkin')];
+        return a;
+    }
+    public static function getMetaData(path:String, mod:String):ModsPack {
+        var modData:ModsPack = cast Json.parse(File.getContent(path));
+        modData.dir = mod;
+        return modData;
+    }
+    public static function isEnabled(modPath:String ) {
+        if (!enabledMods.exists(modPath))
+            enabledMods.set(modPath, true);
+        return enabledMods[modPath];
+
+    }
+    public static function saveFile(?save = true) {
+        if (!FileSystem.exists("mods/modList.txt")) 
+            File.saveContent("mods/modList.txt", "loading...");
+        var content = [];
+        for (i in mods) {
+            content.push(i + "|" + isEnabled(i));
+        }
+        File.saveContent('mods/modList.txt', content.join("\n"));
+    }
+    static var sessionModsCreated:Array<String> = [];
+    public static function createMod(name = "test", ?customPath:String = "mods/") {
+        var mod_path = '$customPath$name';
+        trace(mod_path);
+        sessionModsCreated.push(mod_path);
         if (FileSystem.exists(mod_path))
             {
-                if (FileSystem.isDirectory(mod_path))
-                    FileSystem.deleteDirectory(mod_path);
-                else 
-                    FileSystem.deleteFile(mod_path);
+                FlxG.log.add("Hey, the mod " + mod_path + " already exists!!!, redo this later!.");
+             return;
 
             }
         FileSystem.createDirectory(mod_path);
@@ -109,6 +186,7 @@ class Mods {
             needsRestartWhenLoading: false,
             useASGlobal: false,
             canCheat: true,
+            "overrideMod": false // this isn't the same of "useASGlobal" <- this one is a pref
 
         };
         _BaseMod.set("pack.json", {type: "file", content: Json.stringify(pack, null, " ")});
@@ -127,6 +205,7 @@ class Mods {
                     FileSystem.createDirectory('${mod_path}/${key}');
             }
         }
+
         for (key in  _BaseMod.keys() ){
             var data = _BaseMod.get(key);
             switch(data.type)

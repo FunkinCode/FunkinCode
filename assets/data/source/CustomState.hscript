@@ -1,0 +1,4 @@
+
+function init() {
+    state.addScript(Paths.getDataPath() + 'source/'+ state.curState +".hscript" )
+}

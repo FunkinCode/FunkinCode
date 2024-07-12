@@ -2,6 +2,7 @@ package;
 
 
 
+import eastereggs.AsrielState;
 import api.Iteractor;
 import openfl.events.MouseEvent;
 import lime.app.Application;
@@ -85,12 +86,9 @@ class TitleState extends MusicBeatState
 		{
 			VideoState.seenVideo = FlxG.save.data.seenVideo;
 		}
-		CoolUtil.recomendFPS();
-		new Iteractor({
-			canDownload: true,
-			blockedUsers: [],
-			disableServices: true,
-		});
+		trace("Hola");
+		//CoolUtil.recomendFPS();
+		
 		Iteractor.current.getModsSuscribed(function (e){
 			trace(e);
 		});
@@ -203,19 +201,19 @@ class TitleState extends MusicBeatState
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
 			
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+			transIn = FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1), 
+			     	{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width * 1.5, FlxG.height * 1.25));
+			transOut =FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.45, new FlxPoint(0, 1),
+				{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width * 1.5, FlxG.height * 1.25));
 		}
-
+		
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			FlxG.sound.playMusic(Paths.music('engine/funkinMenu'), 0);
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
-		Conductor.changeBPM(102);
+		Conductor.changeBPM(106);//102);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -301,8 +299,8 @@ class TitleState extends MusicBeatState
 
 		if (initialized)
 			skipIntro();
-		else
-			initialized = true;
+		
+		initialized = true;
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
@@ -334,14 +332,16 @@ class TitleState extends MusicBeatState
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new CutsceneAnimTestState());
 		#end
+		if (FlxG.keys.justPressed.NINE) {
+			AsrielState.transition();
+		}
 		if (FlxG.keys.justPressed.L) {
-		FreeplayState.loadSong("chiller", "corrupted-demo", 1, 8);
+				FlxG.sound.music.onComplete ();
+		//FreeplayState.loadSong("chiller", "corrupted-demo", 1, 8);
 
 		}
 
-		
-
-
+	
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
@@ -385,11 +385,13 @@ class TitleState extends MusicBeatState
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7).onComplete = function() FlxG.switchState(new MainMenuState());
+			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
-
+            new FlxTimer().start(0.35, (f)->{
+ FlxG.switchState(new MainMenuState());
+            });
 			#if newgrounds
 			if (!OutdatedSubState.leftState)
 			{
@@ -579,3 +581,4 @@ class TitleState extends MusicBeatState
 		}
 	}
 }
+// Test

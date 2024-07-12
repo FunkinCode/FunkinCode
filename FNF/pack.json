@@ -1,0 +1,12 @@
+{
+    "overrideMod": true,
+    "needsRestartWhenLoading": true,
+    "canCheat": true,
+    "priority": -1,
+    "ver": "0.2.8",
+    "name": "FNF",
+    "repo": "",
+    "useASGlobal": true,
+    "description": "FridayNightFunkinDesc --dev",
+    "author": "FunkinCrew"
+   }

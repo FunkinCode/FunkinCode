@@ -1,0 +1,14 @@
+
+
+function init(name, path, id, partern) {
+	globalPatern = patern;	
+}
+function update(elapsed) {
+	patern = globalPatern;
+	if (patern.animation.curAnim == null){
+		return;
+	}
+	if (!patern.animation.curAnim.name.startsWith('sing') && patern.animation.curAnim.finished){
+		playAnim('idleHair');		
+	}
+}

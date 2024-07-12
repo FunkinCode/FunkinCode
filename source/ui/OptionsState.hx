@@ -1,5 +1,6 @@
 package ui;
 
+import utils.Server;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -19,8 +20,7 @@ class OptionsState extends MusicBeatState
 
 	override function create()
 	{
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
+		
 		var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -65,6 +65,7 @@ class OptionsState extends MusicBeatState
 	{
 		page.onSwitch.add(switchPage);
 		pages[name] = page;
+		trace(name);
 		add(page);
 		page.exists = currentName == name;
 		return page;
@@ -72,11 +73,12 @@ class OptionsState extends MusicBeatState
 
 	function setPage(name:PageName)
 	{
+		trace(name);
 		if (pages.exists(currentName))
-			currentPage.exists = false;
-
+			currentPage.exists  = false;
+		trace(currentPage);
 		currentName = name;
-
+		trace(currentPage);
 		if (pages.exists(currentName))
 			currentPage.exists = true;
 	}
@@ -119,6 +121,7 @@ class Page extends FlxGroup
 
 	inline function switchPage(name:PageName)
 	{
+		trace(name);
 		onSwitch.dispatch(name);
 	}
 
@@ -171,6 +174,8 @@ class Page extends FlxGroup
 
 class OptionsMenu extends Page
 {
+	public static var instance(default, null):OptionsMenu;
+
 	var items:TextMenuList;
 
 	public function new(showDonate:Bool)
@@ -184,25 +189,19 @@ class OptionsMenu extends Page
 		#if cpp
 		createItem('mods', function() switchPage(Mods));
 		#end
+		instance = this;
 
-		#if CAN_OPEN_LINKS
-		if (showDonate)
-		{
 			var hasPopupBlocker = #if web true #else false #end;
 			createItem('donate', selectDonate, hasPopupBlocker);
-		}
-		#end
-		#if newgrounds
-		if (NGio.isLoggedIn)
-			createItem("logout", function() selectLogout());
-		else
-			createItem("login", function() selectLogin());
-		#end
-		createItem("Login with discord", function () tryLogin());
+
+		
+		createItem("Login", function () tryLogin());
 		createItem("exit", exit);
 	}
 	function tryLogin() {
 		trace("login...");
+		trace(LoginInfo.getURLDiscord());
+		FlxG.openURL(LoginInfo.getURLDiscord());
 	}
 	function createItem(name:String, callback:Void->Void, fireInstantly = false)
 	{
@@ -231,54 +230,32 @@ class OptionsMenu extends Page
 	function selectDonate()
 	{
 		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin"]);
 		#else
 		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 		#end
 	}
 	#end
 
-	#if newgrounds
 	function selectLogin(?a:Dynamic)
 	{
-		openNgPrompt(NgPrompt.showLogin());
+		tryLogin();
+	}
+	public function selectLogout(?a:Dynamic)
+	{
+		trace('suposted to logout');
 	}
 
-	function selectLogout(?a:Dynamic)
-	{
-		openNgPrompt(NgPrompt.showLogout());
-	}
 
-	/**
-	 * Calls openPrompt and redraws the login/logout button
-	 * @param prompt 
-	 * @param onClose 
-	 */
-	public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-	{
-		var onPromptClose = checkLoginStatus;
-		if (onClose != null)
-		{
-			onPromptClose = function()
-			{
-				checkLoginStatus();
-				onClose();
-			}
-		}
 
-		openPrompt(prompt, onPromptClose);
-	}
-
-	function checkLoginStatus()
+	public function checkLoginStatus()
 	{
-		// this shit don't work!! wtf!!!!
 		var prevLoggedIn = items.has("logout");
-		if (prevLoggedIn && !NGio.isLoggedIn)
+		if (prevLoggedIn && Server.user != null)
 			items.resetItem("logout", "login", selectLogin);
 		else if (!prevLoggedIn && NGio.isLoggedIn)
 			items.resetItem("login", "logout", selectLogout);
 	}
-	#end
 }
 
 enum PageName

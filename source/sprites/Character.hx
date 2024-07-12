@@ -18,6 +18,7 @@ typedef CharFile = {
 	var scale:Array<Float>;
 	var color:Array<Int>;
 	var danceSpeed:Int;
+	var cameraOffsets:Array<Float>;
 	var healthColor:Array<Int>;
 
 	var position:Array<Float>;
@@ -41,6 +42,7 @@ class Character extends SpriteBase
 {
 	public var debugMode:Bool = false;
 	public var cpu:Bool = false;
+	public var cameraOffsets:Array<Float> = [0,0];
 	public var danceSpeed:Int = 2;
 	public var startedDeath:Bool = false;
 	public var icon:String;
@@ -79,6 +81,8 @@ class Character extends SpriteBase
 
 			charFile = cast Json.parse(charfile);
 			var isXML = true;
+			if (charFile.cameraOffsets != null)
+				this.cameraOffsets= charFile.cameraOffsets;
 			if (FileSystem.exists(Paths.file('images/${charFile.image}.txt')))
 				isXML = false;
 			if (charFile.scale == null)
@@ -86,7 +90,7 @@ class Character extends SpriteBase
 			if (charFile.position == null || charFile.position.length < 1)
 				charFile.position = [0,0];
 			trace(charFile.image);
-			@:privateAccess trace("."+Paths.getPath("images/" + charFile.image , IMAGE, "") + ".");
+			@:privateAccess trace("./"+Paths.getPath("images/" + charFile.image , IMAGE, "") + ".");
 			frames = isXML ? Paths.getSparrowAtlas(charFile.image) : Paths.getPackerAtlas(charFile.image);
 			for (i in 0...2)
 				if (Math.isNaN(charFile.scale[i]) || charFile.scale[i] <= 0)
@@ -101,14 +105,14 @@ class Character extends SpriteBase
 							anim.indices,
 							'',
 							anim.FPS,
-							anim.loop,
+							anim.loop
 						);
 					} else {
 						animation.addByPrefix(
 							anim.name,
 							anim.prefix,
 							anim.FPS,
-							anim.loop,
+							anim.loop
 						);
 					}
 				} catch (e) {
@@ -117,7 +121,7 @@ class Character extends SpriteBase
 						anim.name,
 						anim.prefix,
 						anim.FPS,
-						anim.loop,
+						anim.loop
 					);
 				}
 				position = charFile.position;
@@ -148,34 +152,12 @@ class Character extends SpriteBase
 		}
 		loadOffsetFile(curCharacter);
 
-		dance();
-		animation.finish();
+	
 		if (isPlayer)
 			flipX = !flipX; // When eres niz:
 		updateHitbox();
-        if (curCharacter == "pico-speaker")
-            loadMappedAnims();
-	
-	}
-
-	public function loadMappedAnims()
-	{
-		var swagshit = Song.loadFromJson('picospeaker', 'stress');
-        playAnim("shoot1");
-		var notes = swagshit.notes;
-
-		for (section in notes)
-		{
-			for (idk in section.sectionNotes)
-			{
-				animationNotes.push(idk);
-			}
-		}
-
-		TankmenBG.animationNotes = animationNotes;
-
-		trace(animationNotes);
-		animationNotes.sort(sortAnims);
+		dance();
+		animation.finish();
 	}
 
 	function sortAnims(val1:Array<Dynamic>, val2:Array<Dynamic>):Int
@@ -199,16 +181,14 @@ class Character extends SpriteBase
 			setOffset(splitWords[0], Std.parseInt(splitWords[1]), Std.parseInt(splitWords[2]));
 		}}catch(e) {}
 	}
-
-	override function update(elapsed:Float)
-	{
-		try {
+	function checkNextAnimation() {
+		if (debugMode)
+			return;
 		if (animation.curAnim.name.startsWith('sing'))
-			holdTimer += elapsed;
+			holdTimer += FlxG.elapsed;
 		else
 			holdTimer = 0;
-		if (cpu)
-		{
+	
 			var dadVar:Float = 4;
 			if (curCharacter == 'dad')
 				dadVar = 6.1;
@@ -217,53 +197,29 @@ class Character extends SpriteBase
 				dance();
 				holdTimer = 0;
 			}
-		} else {
-			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
-			{
-				dance();
-			}
-
-			
-		}
 		if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished && startedDeath)
+			playAnim('deathLoop');
+		
+		if (animationNotes.length > 0)
 			{
-				playAnim('deathLoop');
+				if (Conductor.songPosition > animationNotes[0][0])
+				{
+
+					var shootAnim:Int = FlxG.random.int(1, 2);
+
+					if (animationNotes[0][1] >= 2)
+						shootAnim = 3;
+
+					playAnim('shoot' + shootAnim, true);
+					animationNotes.shift();
+				}
 			}
-		if (curCharacter.endsWith('-car'))
-		{
-			// looping hair anims after idle finished
-			if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
-				playAnim('idleHair');
-		}
-
-		switch (curCharacter)
-		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					playAnim('danceRight');
-			case "pico-speaker":
-				// for pico??
-				if (animationNotes.length > 0)
-				{
-					if (Conductor.songPosition > animationNotes[0][0])
-					{
-
-						var shootAnim:Int = FlxG.random.int(1, 2);
-
-						if (animationNotes[0][1] >= 2)
-							shootAnim = 3;
-
-						playAnim('shoot' + shootAnim, true);
-						animationNotes.shift();
-					}
-				}
-
-				if (animation.curAnim.finished)
-				{
-					playAnim(animation.curAnim.name, false, false, animation.curAnim.numFrames - 3);
-				}
-		}
-	}catch(e){};
+	}
+	override function update(elapsed:Float)
+	{
+		try {
+			checkNextAnimation();
+		}catch(e){};
 		super.update(elapsed);
 	}
 
