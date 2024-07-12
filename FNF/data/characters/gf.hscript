@@ -1,0 +1,27 @@
+
+function init(name, path, id, partern) {
+	globalPatern = patern;	
+}
+function update(elapsed) {
+	patern = globalPatern;
+	if (patern.animation.curAnim == null){
+		return;
+	}
+	if (patern.animation.curAnim.name == 'hairFall' && patern.animation.curAnim.finished){
+		patern.playAnim('danceRight');
+	}
+}
+function onDanceTime(waitMe) {
+
+	if (gf.animation.curAnim == null) {
+		trace("is null");
+		return;
+	}
+
+	if (gf.animation.curAnim.name == "hairBlow"){
+		waitMe(true);
+	} else {
+		waitMe(false);
+	}
+
+}

@@ -1,0 +1,71 @@
+
+function init(name, path, id, patern) {
+    globalPatern = patern;
+    var swagshit = Song.loadFromJson('picospeaker', 'stress');
+    patern.playAnim("shoot1");
+    var notes = swagshit.sections;
+
+    for (section in notes)
+    {
+        for (idk in section.notes)
+        {
+            idk[1] = idk[1] % 4;
+            patern.animationNotes.push(idk);
+        }
+    }
+    TankmenBG.animationNotes = patern.animationNotes.copy();
+    patern.y = 0;
+    patern.animationNotes.sort(patern.sortAnims);
+
+    var tempTankman = new TankmenBG(20, 500, true);
+    tempTankman.strumTime = 10;
+    tempTankman.resetShit(20, 600, true);
+    tempTankman.alpha = 0.00001;
+    state.tankmanRun.add(tempTankman);
+ 
+   // state.defaultCamZoom = 0.5;
+
+}
+function update(elapsed) {
+    patern = globalPatern;
+    var calcCurTankmens = [];
+    state.tankmanRun.forEachAlive(function (tank) {
+        calcCurTankmens.push(tank);
+    });
+    var maxTankmens = state.getPref("low-resources") ? 2 : 8  ; // modify if you want!!
+    FlxG.watch.addQuick("curTanks", calcCurTankmens.length );
+    FlxG.watch.addQuick("curTanksToAdd", maxTankmens - calcCurTankmens.length );
+    FlxG.watch.addQuick("posibility", ((maxTankmens - calcCurTankmens.length) / maxTankmens) * 100);
+    FlxG.watch.addQuick("tank",TankmenBG.animationNotes.length);
+    if (TankmenBG.animationNotes[0].length > 0) {
+        if ((TankmenBG.animationNotes[0][0] - (1000 * 2.5))< Conductor.songPosition){
+        if (FlxG.random.bool(((maxTankmens - calcCurTankmens.length) / maxTankmens) * 100)) // this fix more lag issues
+            {
+                var tankman= new TankmenBG();
+                tankman.alpha = 1;
+
+                tankman.strumTime = TankmenBG.animationNotes[0][0];
+                tankman.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[0][1] < 2);
+                state.tankmanRun.add(tankman);
+                if (FlxG.random.bool(30)){
+                tankman.isGoingRight = state.cameraRightSide;
+                }
+            }
+            TankmenBG.animationNotes.shift();
+
+        } else {
+            if (maxTankmens > calcCurTankmens.length){
+            }
+        }
+    } else {
+    }
+    
+    if (patern.animation.curAnim == null){
+        return;
+    }
+    if (patern.animation.curAnim.finished){
+        patern.playAnim(patern.animation.curAnim.name, false, false, patern.animation.curAnim.numFrames - 3);
+
+    }          
+                
+}

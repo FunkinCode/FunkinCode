@@ -51,6 +51,7 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		FlxGay.waitDeleteRam = true;
 		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -58,7 +59,7 @@ class FreeplayState extends MusicBeatState
 
 
 		#if debug
-		addSong('Test', 1, 'bf-pixel', FlxColor.WHITE);
+		addSong('Test', 1, 'bf-pixel', 0x009BD3);
 		#end
 
 		if (FlxG.sound.music != null )
@@ -69,6 +70,9 @@ class FreeplayState extends MusicBeatState
 		FlxG.sound.music.volume = .2;
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.setGraphicSize(Math.floor(FlxG.width * 1.1));
+		bg.updateHitbox();
+		bg.screenCenter();
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -180,7 +184,12 @@ class FreeplayState extends MusicBeatState
 
 		super.create();
 	}
-
+	override function onResize(Width:Int, Height:Int) {
+		super.onResize(Width, Height);
+		bg.setGraphicSize(Math.floor(FlxG.width * 1.1));
+		bg.updateHitbox();
+		bg.screenCenter();
+	}
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:FlxColor, ?dir:String = "")
 	{
 		songs.push(new SongMetadata(songName, weekNum, songCharacter,color, dir));
@@ -277,10 +286,12 @@ class FreeplayState extends MusicBeatState
 			trace(Paths.currentMod);
 
 			trace('CUR WEEK' + PlayState.storyWeek);
+			trace('CUR MOD' + Paths.currentMod );
+
 			if (FlxG.keys.pressed.SEVEN)
 				FlxG.switchState(new ChartingState());
 			else
-			LoadingState.loadAndSwitchState(new PlayState());
+				LoadingState.loadAndSwitchState(new PlayState());
 	}
 	var twn:FlxTween;
 	function changeDiff(change:Int = 0)

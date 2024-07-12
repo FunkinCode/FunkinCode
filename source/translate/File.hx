@@ -17,7 +17,7 @@ class File {
 
     public static function resync() {
         rawlangs = [];
-        var files = FileSystem.readDirectory("./assets/data/game/");
+        var files = Paths.readDir("./assets/data/game/");
 
         for (file in files)
             {

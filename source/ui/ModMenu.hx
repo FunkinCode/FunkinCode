@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
@@ -10,13 +11,26 @@ import sys.FileSystem;
 
 class ModMenu extends ui.OptionsState.Page
 {
+	var grpSections:FlxTypedGroup<FlxTypedGroup<ModMenuItem>>;
+	var sectionList = [
+		"DOWNLOADED",
+		"NEW MODS",
+		"BEST OF ALL",
+		"MOST DOWNLOADED"
+	];
 	var grpMods:FlxTypedGroup<ModMenuItem>;
+
 	var enabledMods:Array<String> = [];
 	var modFolders:Array<String> = [];
 
 	var curSelected:Int = 0;
+	var curSection:Int = 0;
+
 	var camFollow:FlxObject;
 	var menuCamera:FlxCamera;
+	public var isMovingMod:Bool = false;
+	public var curMod:ModMenuItem;
+	
 
 	public function new():Void
 	{
@@ -27,8 +41,10 @@ class ModMenu extends ui.OptionsState.Page
 		camera = menuCamera;
 		camFollow = new FlxObject(0,0,1,1);
 		add(camFollow);
+
 		grpMods = new FlxTypedGroup<ModMenuItem>();
 		add(grpMods);
+		
 		menuCamera.follow(camFollow, null, 0.06);
 		var margin = 160;
 		menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
@@ -38,6 +54,8 @@ class ModMenu extends ui.OptionsState.Page
 	}
 	public function moveMod(from,to)
 	{
+		if (sectionList[curSection].toLowerCase()!="DOWNLOADED")
+			return;
 		curSelected = to;
 		utils.Mods.moveMod(from,to);
 		refreshModList();
@@ -54,14 +72,19 @@ class ModMenu extends ui.OptionsState.Page
 
 		selections();
 
-		if (controls.UI_UP_P)
+		if (controls.UI_LEFT_P)
 			selections(-1);
-		if (controls.UI_DOWN_P)
+		if (controls.UI_RIGHT_P)
 			selections(1);
 
+		if (FlxG.keys.justPressed.ENTER) {
+			isMovingMod = true;
+			curMod = grpMods.members[curSelected];
+		}
+		/*
 		if (FlxG.keys.justPressed.SPACE)
 			grpMods.members[curSelected].modEnabled = !grpMods.members[curSelected].modEnabled;
-
+	
 		if (FlxG.keys.justPressed.I && curSelected != 0)
 		{
 			moveMod(curSelected,curSelected - 1);
@@ -74,7 +97,7 @@ class ModMenu extends ui.OptionsState.Page
 		if (FlxG.keys.justPressed.K && curSelected < grpMods.members.length - 1)
 		{
 			moveMod(curSelected,curSelected + 1);
-		}
+		}*/
 
 	}
 
@@ -89,19 +112,9 @@ class ModMenu extends ui.OptionsState.Page
 
 		for (txt in 0...grpMods.length)
 		{
-			grpMods.members[txt].color = FlxColor.WHITE;
-			grpMods.members[txt].x = 30;
-			if (txt == curSelected)
-			{
-				grpMods.members[txt].color = FlxColor.YELLOW;
-				grpMods.members[txt].x = 120;
-				camFollow.y = grpMods.members[txt].y - (20  * 2);
-
-
-			}
+	
 		}
 
-		organizeByY();
 	}
 
 	inline static var MOD_PATH = "./mods";
@@ -120,42 +133,38 @@ class ModMenu extends ui.OptionsState.Page
 		for (i in modFolders)
 		{
 			var txt:ModMenuItem = new ModMenuItem(0, 0, i);
-			txt.text = i;
 			grpMods.add(txt);
 
 			loopNum++;
 		}
 		#end
-		organizeByY();
 	}
 
-	private function organizeByY():Void
-	{
-		for (i in 0...grpMods.length)
-		{
-			grpMods.members[i].y = 10 + (60 * i);
-		}
-	}
+
 }
 
-class ModMenuItem extends Alphabet
+class ModMenuItem extends FlxTypedSpriteGroup<FlxSprite>
 {
 	public var modEnabled:Bool = false;
 	public var daMod:String;
+	
+	/**
+	 * If has internet & isn't local mod.
+	 * **/
+	public var modInfo:api.routes.Mod;
+	public var id:Int; //REDO!!
+	public var text:FlxText;
 
 	public function new(x:Float, y:Float, str:String)
 	{
-		trace(str);
-		super(x, y, str, true,false);
+		super(x, y);
+		text = new FlxText(0,0,0, str, 32);
+		add(text);
+
 	}
 
 	override function update(elapsed:Float)
 	{
-		if (modEnabled)
-			alpha = 1;
-		else
-			alpha = 0.5;
-
 		super.update(elapsed);
 	}
 }

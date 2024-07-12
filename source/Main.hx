@@ -1,38 +1,47 @@
 package;
 
-import flixel.FlxGame;
-import flixel.FlxState;
-import openfl.Assets;
-import openfl.Lib;
-//import openfl.display.FPS;
-import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
-import openfl.events.Event;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
-import openfl.media.Video;
-import openfl.net.NetConnection;
-import openfl.net.NetStream;
+import utils.OptionsDotIni;
+import flixel.system.scaleModes.*;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	public static var mainData:Main;
+	public var game:FlxGay;
+
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
-
+	public static var drawgSys:DragDropping;
+	public static var api:api.Iteractor;
+	public static var fpsCounter:FPS;
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
 	{
-		Lib.current.addChild(new Main());
+		utils.Server.main();
+
+		Lib.current.addChild(mainData = new Main());
+
 	}
 
 	public function new()
 	{
+		OptionsDotIni.init();
+		Utils.setup();
+		OptionsDotIni.save();
+		trace("Setuped the trace");
+
 		super();
+		api = new api.Iteractor({
+			canDownload: true,
+			blockedUsers: [],
+			disableServices: false,
+		});
+		api.getLocalUser((data)->{
+			trace(data);
+		});
+
 
 		if (stage != null)
 		{
@@ -54,11 +63,7 @@ class Main extends Sprite
 		setupGame();
 	}
 
-	var video:Video;
-	var netStream:NetStream;
-	private var overlay:Sprite;
 
-	public static var fpsCounter:FPS;
 
 	private function setupGame():Void
 	{
@@ -67,59 +72,83 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 		FlxGraphic.defaultPersist = true;
-
-		addChild(new FlxGay(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
+		addChild(game = new FlxGay(0, 0, initialState, framerate, framerate, skipSplash, startFullscreen));
+		FlxG.scaleMode = new StageSizeScaleMode();
+		//FlxG.scaleMode = new SwagScale();
+		FlxGraphic.defaultPersist = true;
 
 		#if !mobile
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		#end
-		/* 
-			video = new Video();
-			addChild(video);
 
-			var netConnection = new NetConnection();
-			netConnection.connect(null);
+		//stage.window.borderless = true;
+		
+		drawgSys = new DragDropping(onFile);
+		drawgSys.filters = [];
+		drawgSys.register();
+		stage.window.onResize.add((w, h)-> resize(w,h, false));
+		resize(0, 0);
 
-			netStream = new NetStream(netConnection);
-			netStream.client = {onMetaData: client_onMetaData};
-			netStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netStream_onAsyncError);
-
-			#if (js && html5)
-			overlay = new Sprite();
-			overlay.graphics.beginFill(0, 0.5);
-			overlay.graphics.drawRect(0, 0, 560, 320);
-			overlay.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-			overlay.buttonMode = true;
-			addChild(overlay);
-
-			netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
-			#else
-			netStream.play("assets/preload/music/dredd.mp4");
-			#end 
-		 */
 	}
-	/* 
-		private function client_onMetaData(metaData:Dynamic)
-		{
-			video.attachNetStream(netStream);
+	public static var _width:Float = 0;
+	public static var _height:Float = 0;
+	public static function resize(w:Float, h:Float, ?resizeWindow = false) {
+		_width = w;
+		_height = h;
+		Main.mainData._resize(Math.floor(w), Math.floor(h), resizeWindow);
+	}
+	public static var shouldZoom:Float = 1.0;
+	static function resi(width:Int, height:Int):Void
+	{
+		return;
+		if (width < 0)
+			width = -width;
+		if (height < 0)
+			height = -height;
+		
+		eval('
+		FlxG.width = ${width};
+		FlxG.height = ${height};
 
-			video.width = video.videoWidth;
-			video.height = video.videoHeight;
-		}
+		FlxG.initialWidth = ${width};
+		FlxG.initialHeight = ${height};
 
-		private function netStream_onAsyncError(event:AsyncErrorEvent):Void
-		{
-			trace("Error loading video");
-		}
+		');
 
-		private function netConnection_onNetStatus(event:NetStatusEvent):Void
+		FlxG.resizeGame(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
+	
+		
+		@:privateAccess
+		for ( i in FlxG.cameras.list)
 		{
-		}
+			i.x = 0;
+			i.y = 0;
+			i.width = FlxG.width;
+			i.height = FlxG.height;
+			i.zoom = shouldZoom;
 
-		private function overlay_onMouseDown(event:MouseEvent):Void
-		{
-			netStream.play("assets/preload/music/dredd.mp4");
+			i.updateScrollRect();
+			i.updateFlashOffset();
+			i.updateFlashSpritePosition();
+			i.updateInternalSpritePositions();
 		}
-	 */
+	
+			
+	}
+	
+	public function _resize(w:Int, h:Int, ?resizeWindow:Bool = false) {
+		if (w == 0) w = 1280;
+		if (h == 0) h = 720;
+		
+		if (resizeWindow)
+			mainData.stage.window.resize(w, h);
+		resi(w, h);
+
+
+
+	}
+	public function onFile(str:String) {
+
+	}
 }

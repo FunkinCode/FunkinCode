@@ -13,7 +13,8 @@ class Iteractor {
 
     public var API_BASE_URL:String = "https://8328-179-6-170-170.ngrok-free.app/api/v1";
 
-    private var users:Map<String, User> = [];
+    private var users:SwagArray<User>;
+
     private var mods:Map<String, Mod> = [];
 
     public static var current:Iteractor;
@@ -30,32 +31,46 @@ class Iteractor {
     public function getAPIURL(_key:String) {
         return API_BASE_URL + _key;
     }
-    public function getUser(ID:String, onFetch:(user:User)->Void) {
+    public function getLocalUser(onFetch:(user:User)->Void) {
+        trace("TRyin");
+        return getUser('482637805034668032', onFetch);
+    }
+    public function getUser(ID:String, onFetch:(user:Null<User>)->Void) {
+        trace('trying to download user ' + ID);
         if (users.exists(ID)){
-            onFetch(users.get(ID));
+            onFetch(users.getFirst(ID));
             return;
         }
         
-        getText('https://api.mdcdev.me/v1/users/482637805034668032',function (data){
+        getText('https://api.mdcdev.me/v1/users/${ID}',function (data){
+            trace(data.code == 11001 );
+            if (data.code == 11001 )
+                {
+                    data = null;
+                    error('The user ${ID} doesn\'t exists on disord');
+                
+                    return;
+                }
             var userData = { // cast data;
-                ID: data.id,
-                avatarURL: data.avatarURL,
-                modsPublished: [],
-                name: data.globalName,
-                globalName: data.globalName,
-                username: data.username,
-                tag: data.tag,
+                ID: null,
+                AvatarURL: data.avatarURL,
+                DisplayUsername: data.globalName,
+                Username: data.username,
+                DiscordID: data.id,
+                Flags: -1,
+                CreatedAt: null,
+                LastUpdated: null,
+                Private: false,
             };
+
             if (!FileSystem.exists("_cache/"))
                 FileSystem.createDirectory("_cache/");
-
-            downloadArchive(data.avatarURL, '_cache/local-avatar.png', function(){trace("descargado");});
-           /* downloadArchive('https://cdn.discordapp.com/attachments/969730941956280352/1175867699495182366/TestMod.zip?ex=656ccb22&is=655a5622&hm=4ea8c805e804c2f002208e037cb145d23dc56523df9640b872f81dacc1ba119b&',
-            "mod.zip",
-            function (){trace("moddescargado");}
-            );*/
+            if (Paths.exists('./_cache/avatars/${data.id}.png', IMAGE))
+            downloadArchive(data.avatarURL, '_cache/avatars/${data.id}.png', ()->{trace('Avatar from ${ID} was downloaded');});
+            trace("downloaded");
             users.set(ID,userData);
-            users.set("local",userData);
+            info( haxe.Json.stringify(users.toJSON()));
+            sys.io.File.saveContent('_cache/_users.json', haxe.Json.stringify(users.toJSON()));
             getUser(ID, onFetch); // reCall
         });
 
@@ -93,20 +108,24 @@ class Iteractor {
         request.request();
     }
     public function new(options:IteractorOptions) {
+        users = new SwagArray<User>();
         current = this;
         cache = new Map();
         token = "test-token";
+        try {
+        users = Json.parse('_cache/_users.json');
+        } catch(e) {error(e);}
     }
     public function getMod(mod:String, onData:(data:Mod)->Void) {
         getText(getAPIURL('/mod/$mod/'), function a(data) {
             var mod:Mod = cast data;
             onData(mod);
             
-            trace(mod.author.avatarURL);
+            trace(mod.author.AvatarURL);
             trace(mod.downloadLink);
             if (!FileSystem.exists("_cache/"))
                 FileSystem.createDirectory("_cache/");
-            downloadArchive(mod.author.avatarURL, "_cache/avatar-2.png", ()->trace("Se descargó papu"));
+            downloadArchive(mod.author.AvatarURL, "_cache/avatar-2.png", ()->trace("Se descargó papu"));
             downloadArchive(mod.downloadLink, "_cache/mod.zip", ()->{
                 trace("Se descargó papu");
 

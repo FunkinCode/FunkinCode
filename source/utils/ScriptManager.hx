@@ -3,8 +3,33 @@ package utils;
 class ScriptManager {
     public var length:Int =-1;
     public var scripts:Array<Script> = [];
+    public var variables:Map<String, Dynamic> = [];
     public function new() {
         
+    }
+    public function updateVars() {
+        for (script in scripts) {
+            var fields = Reflect.fields(FlxG.state);
+            for(i in fields)
+                script.setVar(i, Reflect.field(FlxG.state,i));
+
+            hearMe(script);
+            script.call('updateScript', [script.name]);
+        }
+    }
+    public function addVariable(name:String, ?from:Dynamic) {
+        if (from == null)
+            from = FlxG.state;
+        variables.set(name, from);
+    }
+    public function addFunc(name:String, onCall:(args:Array<Dynamic>)->Void) {
+        for (script in scripts)
+        script.setVar(name,  Reflect.makeVarArgs(onCall));
+    }
+    public function hearMe(script:Script) {
+        for (variable => patern in variables) {
+            script.setVar(variable, Reflect.getProperty(patern, variable));
+        }
     }
     public function addScript(path:String, ?justOneRun:Bool = false, name:String, ?customPatern:Dynamic)
     {
@@ -21,24 +46,26 @@ class ScriptManager {
         script.setVar("addBefore", Reflect.makeVarArgs(function (args) {
             if (args[1] == null)
                 return FlxG.state.add(args[0]);
-          FlxG.state.insert( FlxG.state.members.indexOf(args[1]) - 1, args[0]);
+          FlxG.state.insert( FlxG.state.members.indexOf(args[1]) - 2, args[0]);
             return args[0] ;
         }));
         script.setVar("addAfter", Reflect.makeVarArgs(function (args) {
             if (args[1] == null)
                 return FlxG.state.add(args[0]);
-          FlxG.state.insert( FlxG.state.members.indexOf(args[1]) +1, args[0]);
+          FlxG.state.insert( FlxG.state.members.indexOf(args[1]) - 1, args[0]);
             return args[0] ;
         }));
         script.name = name;
         try {
-        script.call("init", ["", PlayState.SONG.song, script.ID, customPatern]);
+        script.call("init", [name, PlayState.SONG.song, script.ID, customPatern]);
 
         } catch(e) {
              try {
-        script.call("init", ["", null, script.ID, customPatern]);
+        script.call("init", [name, null, script.ID, customPatern]);
 
         } catch(c) {
+        script.call("init", [name]);
+
         }}
 
         if (!justOneRun)

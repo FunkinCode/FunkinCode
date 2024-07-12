@@ -31,11 +31,11 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	inline function get_caseAllowed() return font.caseAllowed;
 	public var maxHeight(get, never):Float;
 	inline function get_maxHeight() return font.maxHeight;
-	
+	public var maxWidth(get, never):Float;
+	inline function get_maxWidth() return font.maxWidth;
 	public function new (x = 0.0, y = 0.0, text:String, fontName:AtlasFont = Default)
 	{
-		if (!fonts.exists(fontName))
-			fonts[fontName] = new AtlasFontData(fontName);
+		fonts[fontName] = new AtlasFontData(fontName);
 		font = fonts[fontName];
 		
 		super(x, y);
@@ -221,6 +221,7 @@ private class AtlasFontData
 	
 	public var atlas:FlxAtlasFrames;
 	public var maxHeight:Float = 0.0;
+	public var maxWidth:Float = 0.0;
 	public var caseAllowed:Case = Both;
 	
 	public function new (name:AtlasFont)
@@ -235,7 +236,7 @@ private class AtlasFontData
 		for (frame in atlas.frames)
 		{
 			maxHeight = Math.max(maxHeight, frame.frame.height);
-			
+			maxWidth = Math.max(maxWidth, frame.frame.width);
 			if (!containsUpper)
 				containsUpper = upperChar.match(frame.name);
 			

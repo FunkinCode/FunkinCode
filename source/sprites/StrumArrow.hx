@@ -55,6 +55,12 @@ class StrumArrow extends SpriteBase {
 
 
     }
+    public function press() {
+        animation.play('pressed'); 
+        centerOffsets();
+
+        useHoldTimer = false;
+    }
     public function enableStatic() {
 
         animation.play('static'); 
