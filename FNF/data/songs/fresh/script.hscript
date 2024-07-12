@@ -1,0 +1,10 @@
+function beatHit() {
+	if (curBeat > 16)
+		camZooming = true;
+
+	var events = [];
+	gfSpeed = 1;
+	if ((curBeat >= 16 || curBeat <= 47) && (curBeat >= 80 || curBeat <=111))
+		gfSpeed = 2;
+
+}

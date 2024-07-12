@@ -1,0 +1,16 @@
+function loadingNextSong(nextSong, disable, callBack) {
+    trace("Hai hai");
+    disable(true);
+    var blackShit = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+        -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, 0xFF000000);
+    blackShit.scrollFactor.set();
+    add(blackShit);
+    camHUD.visible = false;
+    var snd = Paths.sound('Lights_Shut_off', "shared");
+    trace("snd != null");
+
+    var sound = FlxG.sound.play(snd);
+    sound.onComplete = function () {
+        callBack(true,true);
+    }
+}

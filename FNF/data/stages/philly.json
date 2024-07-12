@@ -1,0 +1,30 @@
+{
+    "logger": "[DEBUG] ended\n[DEBUG] COMPILING....\n[UNEXPECTED TOKEN] ';getID(stage.stageName); data = '_test';'\n[DEBUG] ended",
+    "levelID": "limo",
+    "details": false,
+    "positions": [
+        {
+            "name":"dad",
+            "x":0,
+            "y":0,
+            "camera_x":0,
+            "camera_y":0
+        },
+        {
+            "name":"boyfriend",
+            "x":0,
+            "y":0,
+            "camera_x":0,
+            "camera_y":0
+        },
+        {
+            "name":"gf",
+            "x":0,
+            "y":0,
+            "camera_x":0,
+            "camera_y":0
+        }
+        ],
+    "zoom":1.05,
+    "cameraSpeed":1
+}

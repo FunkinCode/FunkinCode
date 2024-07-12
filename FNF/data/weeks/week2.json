@@ -1,0 +1,9 @@
+{
+    "songs": [
+        ["Spookeez", "spooky", [34, 50, 68]],
+        ["South", "spooky", [34, 50, 68]],
+        ["Monster", "monster", [34, 50, 68]]
+    ],
+    "isHide": [false,false],
+    "weekName": "week2"
+}

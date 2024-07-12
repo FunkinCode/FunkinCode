@@ -1,0 +1,9 @@
+{
+    "songs": [
+        ["Pico", "pico", [148, 22, 83]],
+        ["Philly", "pico", [148, 22, 83]],
+        ["Blammed", "pico", [148, 22, 83]]
+    ],
+    "isHide": [false,false],
+    "weekName": "week3"
+}

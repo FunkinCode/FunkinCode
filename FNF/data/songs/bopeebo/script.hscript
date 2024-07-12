@@ -1,0 +1,12 @@
+
+function beatHit() 
+    {
+    
+        if (curBeat % 8 == 7)
+            {
+                if (!kys)
+                    boyfriend.playAnim('hey', true);
+            }
+    
+    }
+    

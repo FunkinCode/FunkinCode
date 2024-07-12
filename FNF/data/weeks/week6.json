@@ -1,0 +1,9 @@
+{
+    "songs": [
+        ["Senpai", "senpai", [255, 120, 191]],
+        ["Roses", "senpai", [255, 120, 191]],
+        ["Thorns", "spirit", [255, 120, 191]]
+    ],
+    "isHide": [false,false],
+    "weekName": "week6"
+}
