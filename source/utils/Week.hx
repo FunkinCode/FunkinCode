@@ -24,6 +24,10 @@ class Week {
         **/
         _GetFrom('assets/data', "");
         /**
+            FUNKIn
+         */
+        _GetFrom('funkin/data', "funkin");
+        /**
             MODS
         **/
         for (mod in utils.Mods.mods) 
@@ -38,7 +42,7 @@ class Week {
         if (FileSystem.exists('${dataPath}/weekList.txt' ))
                 _From(dataPath, File.getContent('${dataPath}/weekList.txt').trim().rtrim().replace("\r","").split("\n"), mod);
         if (FileSystem.exists('${dataPath}/weeks') && FileSystem.isDirectory('$dataPath/weeks'))
-                _From(dataPath,FileSystem.readDirectory('${dataPath}/weeks'), mod);
+                _From(dataPath,Paths.readDir('${dataPath}/weeks'), mod);
         
     }
     static var last_added:Array<String> = [];
@@ -65,7 +69,7 @@ class Week {
             if (!_Has(week)){
                 weeks.push(week);
             }
-    } catch(e) {trace(e);}
+    } catch(e) {}
         }
     }
     static function _Has(week:WeekFile) {
