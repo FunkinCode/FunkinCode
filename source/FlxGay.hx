@@ -3,53 +3,47 @@ package;
 import flixel.FlxGame;
 
 class FlxGay extends FlxGame {
+    public static var waitDeleteRam:Bool = false;
 	override function switchState():Void
         {
             // Basic reset 
-            FlxG.cameras.reset();
-            FlxG.inputs.onStateSwitch();
-            #if FLX_SOUND_SYSTEM
-            FlxG.sound.destroy();
-            #end
-            Paths.grabbedFiles = [];
-            Paths.cacheData();
+            if (Type.getClass(_state) != PlayState) {
+                Paths.grabbedFiles = [];
+                Paths.cacheData();
 
-            FlxG.signals.preStateSwitch.dispatch();
-    
-            #if FLX_RECORD
-            FlxRandom.updateStateSeed();
-            #end
-    
-            // Destroy the old state (if there is an old state)
-            if (_state != null)
-                _state.destroy();
-           try {
-                Paths.clearUnusedMemory();
-            } catch(error) {
-                FlxG.log.error(error);
+                try {
+                    if (!waitDeleteRam) // for better old cache  /// Yeah yeah, im, dumb?
+                        Paths.clearUnusedMemory();
+                } catch(error) {
+                    FlxG.log.error(error);
+                }
             }
-           // BAD MANNAGER BAF MANANGER
-           Paths.destroyFlixelCache();
-           FlxG.bitmap.clearCache();
+            try {
+            super.switchState();
+            } catch(e) {
+                onCrash('Game is crashed', 'The crash was called from "create" / "switchState"', e);
+            }
+        }
+    override function draw() {
+          //  try {
+                super.draw();
+            /*} catch(e) {
+                //FlxG.resetState();
+                onCrash('Game is crashed', 'The crash was called from "draw"', e);
+            }*/
+        }
+        override function update() {
+            try {
+                super.update();
+            } catch(e) {
+                onCrash('Game is crashed', 'The crash was called from "update"', e);
+            }
+        }
+        public static function onCrash(title:String, message:String, err:haxe.Exception) {
 
-            // Finally assign and create the new state
-            _state = _requestedState;
-    
-            if (_gameJustStarted)
-                FlxG.signals.preGameStart.dispatch();
-    
-            FlxG.signals.preStateCreate.dispatch(_state);
-       
-            _state.create();
-       
-            if (_gameJustStarted)
-                gameStart();
-    
-            #if FLX_DEBUG
-            debugger.console.registerObject("state", _state);
-            #end
-    
-            FlxG.signals.postStateSwitch.dispatch();
-         
+            FlxG.switchState(new CrashHandler(title, message, err));
+
+            //Main.mainData.stage.window.alert('${message}\nError: ${err}\nCallstack: ${err.stack}',title);
+
         }
 }
