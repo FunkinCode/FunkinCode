@@ -18,6 +18,7 @@ typedef CharFile = {
 	var scale:Array<Float>;
 	var color:Array<Int>;
 	var danceSpeed:Int;
+	var cameraOffsets:Array<Float>;
 	var healthColor:Array<Int>;
 
 	var position:Array<Float>;
@@ -41,6 +42,7 @@ class Character extends SpriteBase
 {
 	public var debugMode:Bool = false;
 	public var cpu:Bool = false;
+	public var cameraOffsets:Array<Float> = [0,0];
 	public var danceSpeed:Int = 2;
 	public var startedDeath:Bool = false;
 	public var icon:String;
@@ -79,6 +81,8 @@ class Character extends SpriteBase
 
 			charFile = cast Json.parse(charfile);
 			var isXML = true;
+			if (charFile.cameraOffsets != null)
+				this.cameraOffsets= charFile.cameraOffsets;
 			if (FileSystem.exists(Paths.file('images/${charFile.image}.txt')))
 				isXML = false;
 			if (charFile.scale == null)
@@ -86,7 +90,7 @@ class Character extends SpriteBase
 			if (charFile.position == null || charFile.position.length < 1)
 				charFile.position = [0,0];
 			trace(charFile.image);
-			@:privateAccess trace("."+Paths.getPath("images/" + charFile.image , IMAGE, "") + ".");
+			@:privateAccess trace("./"+Paths.getPath("images/" + charFile.image , IMAGE, "") + ".");
 			frames = isXML ? Paths.getSparrowAtlas(charFile.image) : Paths.getPackerAtlas(charFile.image);
 			for (i in 0...2)
 				if (Math.isNaN(charFile.scale[i]) || charFile.scale[i] <= 0)
@@ -101,14 +105,14 @@ class Character extends SpriteBase
 							anim.indices,
 							'',
 							anim.FPS,
-							anim.loop,
+							anim.loop
 						);
 					} else {
 						animation.addByPrefix(
 							anim.name,
 							anim.prefix,
 							anim.FPS,
-							anim.loop,
+							anim.loop
 						);
 					}
 				} catch (e) {
@@ -117,7 +121,7 @@ class Character extends SpriteBase
 						anim.name,
 						anim.prefix,
 						anim.FPS,
-						anim.loop,
+						anim.loop
 					);
 				}
 				position = charFile.position;
@@ -184,8 +188,7 @@ class Character extends SpriteBase
 			holdTimer += FlxG.elapsed;
 		else
 			holdTimer = 0;
-			if (cpu)
-		{
+	
 			var dadVar:Float = 4;
 			if (curCharacter == 'dad')
 				dadVar = 6.1;
@@ -194,7 +197,6 @@ class Character extends SpriteBase
 				dance();
 				holdTimer = 0;
 			}
-		} 
 		if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished && startedDeath)
 			playAnim('deathLoop');
 		
