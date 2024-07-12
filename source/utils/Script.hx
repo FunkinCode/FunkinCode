@@ -11,11 +11,13 @@ class Script {
 
     public var ID:Int = 0;
     public var interp:Interp;
+    public var manager:ScriptManager;
     public function new(data:String, ?manager:ScriptManager)
     {
         if (data == null)
-            data = 'trace("no data");';
+            data = 'trace("no data implement for script $ID / $name");';
         parser = new Parser();
+        this.manager = manager;
         expr = parser.parseString(/*'
         var hi = "testing";
 
@@ -40,22 +42,27 @@ class Script {
 
             trace(e);
         }*/
-        init();
-            run();
+        run();
     }
     public static function _ON_STATE_CREATE() {
         trace("poto");
     }
+    var inited:Bool = false;
     public function init() {
         var curState = FlxG.state;
-        var stateClass = Type.getClass(FlxG.state);
-        var className = Type.getClassName(stateClass);
-   
+
+        var t:MusicBeatState = cast curState;
+        if (t == null)
+            return;
+        @:privateAccess setVar("curStep", t.curStep);
+        @:privateAccess setVar("curBeat", t.curBeat);
         if (inited)
             return;
         inited = true;
-
+        var stateClass = Type.getClass(FlxG.state);
+        var className = Type.getClassName(stateClass);
         setVar("state", curState);
+        setVar("State", curState);
         setVar("Padre", curState);
         setVar("Patern", stateClass);
         setVar("State", stateClass);
@@ -87,7 +94,6 @@ class Script {
         }));
   
     }
-
     function importAll() {
     setVar("Math", Math);
     setVar('FlxColor',SimulateFlxColor);
@@ -164,7 +170,6 @@ class Script {
     setVar('Paths',Paths);
     setVar('Song',Song);
     setVar('PlayerSettings',PlayerSettings);
-    setVar('Section',Section);
     setVar('FlxBasic',FlxBasic);
     setVar('FlxCamera',FlxCamera);
     setVar('FlxG',FlxG);
@@ -259,25 +264,13 @@ class Script {
 
     }
     public function call(F:String, args:Array<Dynamic>):Dynamic {
-       // run(); // idk
-       init();
+        init();
         try {
-        
         @:privateAccess
         var functionCall = interp.resolve(F);
         return Reflect.callMethod(FlxG.state, functionCall, args);
         } catch(e) {}
-        var mapWithStateVars:Map<String, Dynamic>=[];
-        for (variable in Reflect.fields(FlxG.state)) {
-            mapWithStateVars.set(variable, Reflect.getProperty(FlxG.state,variable));
-        }
-       @:privateAccess 
-       var vars = interp.variables;
-        for (variable in  /*vars uups*/mapWithStateVars.keys()) {
-            if (vars.get(variable) != mapWithStateVars.get(variable)){
-                Reflect.setProperty(FlxG.state, variable,vars.get(variable));
-            }
-        }
+  
         return null;
     }
 }
