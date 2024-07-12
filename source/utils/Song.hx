@@ -6,8 +6,7 @@ import lime.utils.Assets;
 
 using StringTools;
 
-typedef SwagSong =
-{
+typedef OldSwagSong = {
 	var song:String;
 	var notes:Array<SwagSection>;
 	var bpm:Float;
@@ -21,16 +20,69 @@ typedef SwagSong =
 	var ?stage:String;
 }
 
+typedef SwagSong =
+{
+	var version:String;
+	var song:String;
+	var sections:Array<Section>;
+	var events:Array<Dynamic>;
+	var bpm:Float;
+	var speed:Float;
+
+	var players:Array<String>;
+	var validScore:Bool;
+	var stage:String;
+}
+
 class Song
 {
+	public static function importOldFormat(song:OldSwagSong):SwagSong {
+		var oldSong= {
+			version: "1",
+			song: song.song,
+			sections: [],
+			bpm: song.bpm,
+			events: [],
+			players: [song.player1,song.player2,song.player3],
+		
+			stage: song.stage,
+			speed: song.speed,
+			validScore: true
+		};
+
+		for (section in song.notes) {
+			var sec:Section = {
+				notes: [],
+				bpm: section.bpm,
+				mustHitSection: section.mustHitSection,
+				changeBPM: section.changeBPM,
+			}
+			for (notes in section.sectionNotes) {
+			var mustPress = section.mustHitSection;
+
+				var type = "default";
+				if (section.altAnim)
+					type = "alt";
+				if (notes[1] > 3)
+					mustPress = !mustPress;
+				var e = Math.abs(notes[1] % 4);
+				if (!mustPress)
+					e += 4;
+
+				sec.notes.push([notes[0],e,notes[2],type]);
+			}
+			oldSong.sections.push(sec);
+		}
+		return oldSong;
+	}
 	public static var defaultSong:SwagSong = {
+		version: "1",
 		song: 'Test',
-		notes: [],
+		sections: [],
 		bpm: 150,
-		needsVoices: true,
-		player1: 'bf',
-		player2: 'dad',
-		player3: "gf",
+		events: [],
+		players: ['bf',"dad","gf"],
+	
 		stage: "stage",
 		speed: 1,
 		validScore: false
@@ -60,7 +112,7 @@ class Song
 			var rawJson = Paths.text(path, "").trim();
 			trace(path);
 			if (rawJson == "")
-				return loadFromJson("test", "test");
+				return loadFromJson("tutorial", "tutorial");
 
 			return parseJSONshit(rawJson);
 		}
@@ -70,6 +122,9 @@ class Song
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		if (swagShit.version == null){
+			swagShit = importOldFormat(cast swagShit);
+		}
 		swagShit.validScore = true;
 		return swagShit;
 	}
