@@ -14,7 +14,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
-
+	public var player:Int = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
@@ -24,6 +24,7 @@ class Note extends FlxSprite
 	public var prevNote:Note;
 
 	private var willMiss:Bool = false;
+	public  var willHit:Bool = false;
 
 	public var altNote:Bool = false;
 	public var invisNote:Bool = false;
@@ -41,6 +42,7 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 	public var isEndNote:Bool = false;
+	public var realNoteData:Int;
 	var isPixel = false;
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
@@ -48,6 +50,9 @@ class Note extends FlxSprite
 	{
 		x = 0; // reset pos
 		y = 0; // reset pos
+		realNoteData = noteData;
+		player = Math.floor(Math.abs(Math.floor(noteData / 4)));
+		this.noteData = Math.floor(noteData % 4);
 
 		if (prevNote == null)
 			prevNote = this;
@@ -121,7 +126,6 @@ class Note extends FlxSprite
 		y -= 2000;
 		this.strumTime = strumTime;
 
-		this.noteData = noteData;
 
 		
 		colorSwap = new ColorSwap();
@@ -154,7 +158,7 @@ class Note extends FlxSprite
 			{
 				prevNote.animation.play('${dirs[noteData]}hold');
 				var speed = PlayState.SONG.speed * PreferencesMenu.getPref("song-speed");
-				prevNote.scale.y *= (Conductor.stepCrochet ) / 100 * 1.55 * speed;
+				prevNote.scale.y *= (Conductor.stepCrochet ) / 100 * 1.50 * speed;
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
@@ -167,6 +171,8 @@ class Note extends FlxSprite
 	{
 		colorSwap.update(arrowColors[noteData]);
 	}
+	public var drawSwagRect:Bool = true;
+	public static var offsetYData:Float = 1.14655;
 	function repositionNote() {
 		if (strumLine == null)
 			return;
@@ -177,28 +183,27 @@ class Note extends FlxSprite
 		alpha = strumLine.alpha;
 		if (isSustainNote)
 			{
-			if (PreferencesMenu.getPref('downscroll'))
-				angle = 180;
-			x +=Note.swagWidth / 2;
-			x -= width / 2;
-			alpha *= .75;
+				if (PreferencesMenu.getPref('downscroll'))
+					angle = 180;
+				x +=Note.swagWidth / 2;
+				x -= width / 2;
+				alpha *= .65;
 
 			}
 		angle += strumLine.angle;
-
+			var canBeDrawed = (drawSwagRect || prevNote.drawSwagRect); 
 		if (PreferencesMenu.getPref('downscroll'))
 		{
-			y = (strumLine.y + (Conductor.songPosition - strumTime) * (0.45 * FlxMath.roundDecimal((PlayState.SONG.speed * PreferencesMenu.getPref("song-speed")), 2)));
+			y = (strumLine.y + ((Conductor.songPosition - Conductor.offset) - strumTime) * (0.45 * FlxMath.roundDecimal((PlayState.SONG.speed * PreferencesMenu.getPref("song-speed")), 2)));
 
 			if (isSustainNote)
 			{
 				if (animation.curAnim.name.endsWith("end") && prevNote != null)
-					y += prevNote.height * 1.25;
+					y += prevNote.height * 1.3;
 				else
 					y += height / 2;
 
-				if ((!mustPress || (wasGoodHit || (prevNote.wasGoodHit )))
-					&& y - offset.y * scale.y + height >= strumLineMid)
+				if (canBeDrawed && y - offset.y * scale.y + height >= strumLineMid)
 				{
 					var swagRect:FlxRect = new FlxRect(0, 0, frameWidth, frameHeight);
 
@@ -210,11 +215,9 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			y = (strumLine.y - (Conductor.songPosition - strumTime) * (0.45 * FlxMath.roundDecimal((PlayState.SONG.speed * PreferencesMenu.getPref("song-speed")), 2)));
+			y = (strumLine.y - ((Conductor.songPosition - Conductor.offset) - strumTime) * (0.45 * FlxMath.roundDecimal((PlayState.SONG.speed * PreferencesMenu.getPref("song-speed")), 2)));
 
-			if (isSustainNote
-				&& (!mustPress || (wasGoodHit || (prevNote.wasGoodHit )))
-				&& y + offset.y * scale.y <= strumLineMid)
+			if (isSustainNote && canBeDrawed&& y + offset.y * scale.y <= strumLineMid)
 			{
 				var swagRect:FlxRect = new FlxRect(0, 0, width / scale.x, height / scale.y);
 
@@ -229,19 +232,17 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 		repositionNote();
-		if (mustPress)
-		{
-			// miss on the NEXT frame so lag doesnt make u miss notes
-			if (willMiss && !wasGoodHit)
+		willHit = (strumTime < ((Conductor.songPosition - Conductor.offset)));
+		if (willMiss && !wasGoodHit)
 			{
 				tooLate = true;
 				canBeHit = false;
 			}
 			else
 			{
-				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset)
+				if (strumTime > ((Conductor.songPosition - Conductor.offset)) - Conductor.safeZoneOffset)
 				{ // The * 0.5 is so that it's easier to hit them too late, instead of too early
-					if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+					if (strumTime < ((Conductor.songPosition - Conductor.offset) )+ (Conductor.safeZoneOffset * 0.5))
 						canBeHit = true;
 				}
 				else
@@ -250,14 +251,8 @@ class Note extends FlxSprite
 					willMiss = true;
 				}
 			}
-		}
-		else
-		{
+		if (wasGoodHit || tooLate)
 			canBeHit = false;
-
-			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
-		}
 
 		if (tooLate)
 		{
