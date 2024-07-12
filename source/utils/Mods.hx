@@ -68,14 +68,19 @@ class Mods {
         {
             mods = getModsByFile();
             overrideMods = [];
+            if (!FileSystem.exists('debugMod'))
+                createMod("debugMod", '');
+            if (!FileSystem.exists('funkin'))
+                createMod("funkin", '');
+            if (!FileSystem.exists('assets')) // wEIRD. 
+                createMod("assets", '');
             if (!FileSystem.exists("mods"))
                 FileSystem.createDirectory("mods");
 
-            var mdos  = FileSystem.readDirectory("mods");
+            var mdos  = Paths.readDir("mods");
             trace(mdos);
             for (mod in mdos ) {
                 var mod_path = 'mods/$mod';
-                trace(mod_path);
                 if (FileSystem.exists(mod_path) && FileSystem.isDirectory(mod_path)) {
                     if (FileSystem.exists('$mod_path/pack.json') && !mods.contains(mod))
                         {
@@ -135,6 +140,15 @@ class Mods {
     public static function toggleMod(modPath:String) {
         enabledMods.set(modPath,!isEnabled(modPath));
     }
+    public static function getCurMods() {
+        var a = [getMetaData('funkin', 'funkin')];
+        return a;
+    }
+    public static function getMetaData(path:String, mod:String):ModsPack {
+        var modData:ModsPack = cast Json.parse(File.getContent(path));
+        modData.dir = mod;
+        return modData;
+    }
     public static function isEnabled(modPath:String ) {
         if (!enabledMods.exists(modPath))
             enabledMods.set(modPath, true);
@@ -150,15 +164,15 @@ class Mods {
         }
         File.saveContent('mods/modList.txt', content.join("\n"));
     }
-    public static function createMod(name = "test") {
-        var mod_path = 'mods/$name';
-        readMods();
+    static var sessionModsCreated:Array<String> = [];
+    public static function createMod(name = "test", ?customPath:String = "mods/") {
+        var mod_path = '$customPath$name';
+        trace(mod_path);
+        sessionModsCreated.push(mod_path);
         if (FileSystem.exists(mod_path))
             {
-                if (FileSystem.isDirectory(mod_path))
-                    FileSystem.deleteDirectory(mod_path);
-                else 
-                    FileSystem.deleteFile(mod_path);
+                FlxG.log.add("Hey, the mod " + mod_path + " already exists!!!, redo this later!.");
+             return;
 
             }
         FileSystem.createDirectory(mod_path);
